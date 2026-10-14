@@ -1,0 +1,1317 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NaraGen Lab — Sistem Berita AI Multi-Agen</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Playfair+Display:wght@700;900&display=swap');
+
+        :root {
+            --bg-primary: #0a0e1a;
+            --bg-secondary: #111827;
+            --bg-card: #1e293b;
+            --bg-card-hover: #263348;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --accent-primary: #6366f1;
+            --accent-light: #818cf8;
+            --accent-glow: rgba(99,102,241,0.3);
+            --accent-success: #10b981;
+            --accent-warning: #f59e0b;
+            --accent-danger: #ef4444;
+            --accent-pink: #ec4899;
+            --accent-cyan: #06b6d4;
+            --border: #334155;
+            --radius: 16px;
+            --radius-sm: 10px;
+            --shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+            --shadow-glow: 0 0 40px var(--accent-glow);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.7;
+            font-size: 16px;
+            overflow-x: hidden;
+        }
+
+        /* === ANIMATIONS === */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        @keyframes shimmer {
+            0% { background-position: -200% center; }
+            100% { background-position: 200% center; }
+        }
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        @keyframes slideInLeft {
+            from { opacity: 0; transform: translateX(-50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes slideInRight {
+            from { opacity: 0; transform: translateX(50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes scaleIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        @keyframes borderGlow {
+            0%, 100% { border-color: var(--accent-primary); }
+            50% { border-color: var(--accent-light); }
+        }
+
+        .animate-on-scroll {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+        .animate-on-scroll.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* === CONTAINER === */
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+
+        /* === NAVIGATION === */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: rgba(10,14,26,0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(51,65,85,0.3);
+            transition: var(--transition);
+        }
+        nav .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 70px;
+        }
+        .nav-logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5em;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--accent-light), var(--accent-primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+        }
+        .nav-links { display: flex; gap: 32px; list-style: none; }
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9em;
+            transition: var(--transition);
+        }
+        .nav-links a:hover { color: var(--accent-light); }
+        .nav-cta {
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-light));
+            color: white !important;
+            padding: 10px 24px;
+            border-radius: 50px;
+            font-weight: 600;
+            box-shadow: var(--shadow-glow);
+            transition: var(--transition);
+        }
+        .nav-cta:hover { transform: translateY(-2px); box-shadow: 0 0 60px var(--accent-glow); }
+
+        /* === HERO SECTION === */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            padding-top: 70px;
+        }
+        .hero-bg {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(ellipse at 20% 50%, rgba(99,102,241,0.15) 0%, transparent 50%),
+                        radial-gradient(ellipse at 80% 20%, rgba(139,92,246,0.1) 0%, transparent 40%),
+                        radial-gradient(ellipse at 50% 80%, rgba(6,182,212,0.08) 0%, transparent 40%);
+            animation: gradientShift 15s ease infinite;
+            background-size: 200% 200%;
+        }
+        .hero-particles {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            overflow: hidden;
+        }
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: var(--accent-light);
+            border-radius: 50%;
+            opacity: 0.3;
+            animation: float 6s ease-in-out infinite;
+        }
+        .particle:nth-child(1) { top: 20%; left: 10%; animation-delay: 0s; }
+        .particle:nth-child(2) { top: 40%; left: 80%; animation-delay: 1s; }
+        .particle:nth-child(3) { top: 60%; left: 20%; animation-delay: 2s; }
+        .particle:nth-child(4) { top: 80%; left: 70%; animation-delay: 3s; }
+        .particle:nth-child(5) { top: 10%; left: 50%; animation-delay: 4s; }
+        .particle:nth-child(6) { top: 70%; left: 90%; animation-delay: 5s; }
+
+        .hero .container {
+            position: relative;
+            z-index: 1;
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 60px;
+            align-items: center;
+        }
+        .hero-content h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.8em;
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 24px;
+            background: linear-gradient(135deg, #f8fafc 0%, #a5b4fc 50%, #818cf8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .hero-content p {
+            font-size: 1.2em;
+            color: var(--text-secondary);
+            margin-bottom: 36px;
+            max-width: 500px;
+        }
+        .hero-badges { display: flex; gap: 12px; margin-bottom: 36px; flex-wrap: wrap; }
+        .hero-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(99,102,241,0.1);
+            border: 1px solid rgba(99,102,241,0.2);
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-size: 0.85em;
+            color: #a5b4fc;
+            font-weight: 500;
+        }
+        .hero-badge .dot {
+            width: 8px; height: 8px;
+            background: var(--accent-success);
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        .hero-ctas { display: flex; gap: 16px; flex-wrap: wrap; }
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-light));
+            color: white;
+            padding: 16px 32px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 1em;
+            text-decoration: none;
+            box-shadow: var(--shadow-glow);
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+        }
+        .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 0 80px var(--accent-glow); }
+        .btn-secondary {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: transparent;
+            color: var(--text-primary);
+            padding: 16px 32px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1em;
+            text-decoration: none;
+            border: 1px solid var(--border);
+            transition: var(--transition);
+        }
+        .btn-secondary:hover { border-color: var(--accent-primary); background: rgba(99,102,241,0.05); }
+
+        /* Hero Visual — Chat Mockup */
+        .hero-visual {
+            position: relative;
+            animation: float 6s ease-in-out infinite;
+        }
+        .chat-mockup {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 24px;
+            box-shadow: var(--shadow);
+        }
+        .chat-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 20px;
+        }
+        .chat-avatar {
+            width: 40px; height: 40px;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-light));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9em;
+        }
+        .chat-info h4 { font-size: 0.95em; margin: 0; }
+        .chat-info p { font-size: 0.75em; color: var(--accent-success); margin: 0; }
+        .chat-messages { display: flex; flex-direction: column; gap: 12px; }
+        .chat-msg {
+            max-width: 85%;
+            padding: 12px 16px;
+            border-radius: var(--radius-sm);
+            font-size: 0.85em;
+            line-height: 1.5;
+        }
+        .chat-msg.owner {
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-light));
+            color: white;
+            align-self: flex-end;
+            border-radius: var(--radius-sm) var(--radius-sm) 4px var(--radius-sm);
+        }
+        .chat-msg.agent {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            align-self: flex-start;
+            border-radius: var(--radius-sm) var(--radius-sm) var(--radius-sm) 4px;
+        }
+        .chat-msg.agent .agent-name {
+            color: var(--accent-light);
+            font-weight: 600;
+            font-size: 0.8em;
+            margin-bottom: 4px;
+        }
+
+        /* === STATS BAR === */
+        .stats-bar {
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+            padding: 48px 0;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+        }
+        .stat-item { text-align: center; }
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--accent-light), var(--accent-primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .stat-label { color: var(--text-muted); font-size: 0.9em; margin-top: 4px; }
+
+        /* === SECTION STYLES === */
+        section { padding: 100px 0; }
+        .section-header { text-align: center; margin-bottom: 60px; }
+        .section-tag {
+            display: inline-block;
+            background: rgba(99,102,241,0.1);
+            border: 1px solid rgba(99,102,241,0.2);
+            color: var(--accent-light);
+            padding: 6px 16px;
+            border-radius: 50px;
+            font-size: 0.8em;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+        .section-header h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.8em;
+            font-weight: 800;
+            margin-bottom: 16px;
+        }
+        .section-header p {
+            color: var(--text-secondary);
+            font-size: 1.1em;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* === PROBLEM SECTION === */
+        .problem-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+        .problem-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 32px;
+            transition: var(--transition);
+        }
+        .problem-card:hover {
+            border-color: var(--accent-danger);
+            transform: translateY(-4px);
+        }
+        .problem-icon {
+            width: 48px; height: 48px;
+            background: rgba(239,68,68,0.1);
+            border: 1px solid rgba(239,68,68,0.2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            margin-bottom: 16px;
+        }
+        .problem-card h3 { font-size: 1.1em; margin-bottom: 8px; }
+        .problem-card p { color: var(--text-secondary); font-size: 0.9em; }
+
+        /* === SOLUTION / FEATURES === */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+        .feature-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 36px 28px;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent-primary), var(--accent-light));
+            opacity: 0;
+            transition: var(--transition);
+        }
+        .feature-card:hover {
+            border-color: var(--accent-primary);
+            transform: translateY(-6px);
+            box-shadow: var(--shadow);
+        }
+        .feature-card:hover::before { opacity: 1; }
+        .feature-icon {
+            width: 56px; height: 56px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+        }
+        .feature-icon.research { background: rgba(6,182,212,0.1); border: 1px solid rgba(6,182,212,0.2); }
+        .feature-icon.factcheck { background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.2); }
+        .feature-icon.writer { background: rgba(99,102,241,0.1); border: 1px solid rgba(99,102,241,0.2); }
+        .feature-icon.editor { background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.2); }
+        .feature-icon.publisher { background: rgba(236,72,153,0.1); border: 1px solid rgba(236,72,153,0.2); }
+        .feature-icon.pipeline { background: rgba(139,92,246,0.1); border: 1px solid rgba(139,92,246,0.2); }
+        .feature-card h3 { font-size: 1.15em; margin-bottom: 8px; }
+        .feature-card p { color: var(--text-secondary); font-size: 0.9em; margin-bottom: 16px; }
+        .feature-list { list-style: none; padding: 0; }
+        .feature-list li {
+            font-size: 0.85em;
+            color: var(--text-muted);
+            padding: 4px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .feature-list li::before {
+            content: '✓';
+            color: var(--accent-success);
+            font-weight: 700;
+        }
+
+        /* === HOW IT WORKS === */
+        .pipeline-visual {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0;
+            margin: 48px 0;
+            flex-wrap: wrap;
+        }
+        .pipeline-step {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 24px 20px;
+            text-align: center;
+            min-width: 160px;
+            position: relative;
+            transition: var(--transition);
+        }
+        .pipeline-step:hover {
+            border-color: var(--accent-primary);
+            box-shadow: var(--shadow-glow);
+            transform: translateY(-4px);
+        }
+        .pipeline-step .step-icon {
+            font-size: 2em;
+            margin-bottom: 12px;
+        }
+        .pipeline-step h4 { font-size: 0.95em; margin-bottom: 4px; }
+        .pipeline-step p { font-size: 0.75em; color: var(--text-muted); }
+        .pipeline-arrow {
+            font-size: 1.5em;
+            color: var(--accent-primary);
+            margin: 0 8px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        /* === PRICING === */
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            align-items: start;
+        }
+        .pricing-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 40px 32px;
+            text-align: center;
+            transition: var(--transition);
+            position: relative;
+        }
+        .pricing-card:hover {
+            border-color: var(--accent-primary);
+            transform: translateY(-8px);
+            box-shadow: var(--shadow);
+        }
+        .pricing-card.featured {
+            border-color: var(--accent-primary);
+            box-shadow: var(--shadow-glow);
+            transform: scale(1.05);
+        }
+        .pricing-card.featured:hover { transform: scale(1.05) translateY(-8px); }
+        .pricing-badge {
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-light));
+            color: white;
+            padding: 4px 16px;
+            border-radius: 50px;
+            font-size: 0.75em;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+        .pricing-card h3 { font-size: 1.2em; margin-bottom: 8px; }
+        .pricing-price {
+            font-size: 2.5em;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--accent-light), var(--accent-primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 16px 0;
+        }
+        .pricing-price span { font-size: 0.4em; font-weight: 400; }
+        .pricing-features { list-style: none; padding: 0; margin: 24px 0; }
+        .pricing-features li {
+            padding: 8px 0;
+            font-size: 0.9em;
+            color: var(--text-secondary);
+            border-bottom: 1px solid rgba(51,65,85,0.5);
+        }
+        .pricing-features li:last-child { border-bottom: none; }
+        .pricing-features li strong { color: var(--text-primary); }
+
+        /* === TESTIMONIAL === */
+        .testimonial-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+        }
+        .testimonial-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 32px;
+            transition: var(--transition);
+        }
+        .testimonial-card:hover { border-color: var(--accent-primary); }
+        .testimonial-stars { color: var(--accent-warning); font-size: 1.2em; margin-bottom: 16px; }
+        .testimonial-text {
+            font-size: 1em;
+            color: var(--text-secondary);
+            font-style: italic;
+            margin-bottom: 20px;
+            line-height: 1.8;
+        }
+        .testimonial-author { display: flex; align-items: center; gap: 12px; }
+        .testimonial-avatar {
+            width: 48px; height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9em;
+        }
+        .testimonial-avatar.purple { background: linear-gradient(135deg, #8b5cf6, #6366f1); }
+        .testimonial-avatar.green { background: linear-gradient(135deg, #10b981, #059669); }
+        .testimonial-author-info h4 { font-size: 0.95em; margin: 0; }
+        .testimonial-author-info p { font-size: 0.8em; color: var(--text-muted); margin: 0; }
+
+        /* === FAQ === */
+        .faq-container { max-width: 700px; margin: 0 auto; }
+        .faq-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            margin-bottom: 12px;
+            overflow: hidden;
+            transition: var(--transition);
+        }
+        .faq-item:hover { border-color: var(--accent-primary); }
+        .faq-question {
+            width: 100%;
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            padding: 20px 24px;
+            text-align: left;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            font-family: 'Inter', sans-serif;
+        }
+        .faq-question .faq-icon {
+            font-size: 1.5em;
+            transition: var(--transition);
+            color: var(--accent-light);
+            flex-shrink: 0;
+        }
+        .faq-item.active .faq-icon { transform: rotate(45deg); }
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+        .faq-answer-content {
+            padding: 0 24px 20px;
+            color: var(--text-secondary);
+            font-size: 0.9em;
+            line-height: 1.7;
+        }
+
+        /* === CTA SECTION === */
+        .cta-section {
+            text-align: center;
+            padding: 100px 0;
+            background: linear-gradient(135deg, #1e1b4b, #312e81, #4c1d95);
+            border-radius: var(--radius);
+            margin: 40px auto;
+            max-width: 900px;
+            border: 1px solid var(--border);
+            position: relative;
+            overflow: hidden;
+        }
+        .cta-section::before {
+            content: '';
+            position: absolute;
+            top: -50%; left: -50%;
+            width: 200%; height: 200%;
+            background: radial-gradient(circle, rgba(99,102,241,0.1) 0%, transparent 50%);
+            animation: gradientShift 10s ease infinite;
+        }
+        .cta-section h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5em;
+            font-weight: 800;
+            margin-bottom: 16px;
+            position: relative;
+        }
+        .cta-section p {
+            font-size: 1.1em;
+            color: var(--text-secondary);
+            margin-bottom: 32px;
+            position: relative;
+        }
+        .cta-buttons { display: flex; gap: 16px; justify-content: center; position: relative; flex-wrap: wrap; }
+
+        /* === FOOTER === */
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 60px 0 30px;
+            background: var(--bg-primary);
+        }
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+        .footer-brand h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5em;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, var(--accent-light), var(--accent-primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .footer-brand p { color: var(--text-muted); font-size: 0.9em; }
+        .footer-col h4 { font-size: 0.9em; margin-bottom: 16px; color: var(--text-primary); }
+        .footer-col ul { list-style: none; padding: 0; }
+        .footer-col li { margin-bottom: 8px; }
+        .footer-col a { color: var(--text-muted); text-decoration: none; font-size: 0.85em; transition: var(--transition); }
+        .footer-col a:hover { color: var(--accent-light); }
+        .footer-bottom {
+            border-top: 1px solid var(--border);
+            padding-top: 24px;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.85em;
+        }
+
+        /* === RESPONSIVE === */
+        @media (max-width: 1024px) {
+            .hero .container { grid-template-columns: 1fr; gap: 40px; }
+            .hero-content h1 { font-size: 2.8em; }
+            .features-grid { grid-template-columns: repeat(2, 1fr); }
+            .pricing-grid { grid-template-columns: 1fr; max-width: 400px; margin: 0 auto; }
+            .pricing-card.featured { transform: none; }
+            .pricing-card.featured:hover { transform: translateY(-8px); }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 32px; }
+            .footer-grid { grid-template-columns: repeat(2, 1fr); }
+            .nav-links { display: none; }
+        }
+        @media (max-width: 768px) {
+            .hero-content h1 { font-size: 2.2em; }
+            .section-header h2 { font-size: 2em; }
+            .features-grid { grid-template-columns: 1fr; }
+            .problem-grid { grid-template-columns: 1fr; }
+            .testimonial-grid { grid-template-columns: 1fr; }
+            .pipeline-visual { flex-direction: column; }
+            .pipeline-arrow { transform: rotate(90deg); margin: 4px 0; }
+            .stats-grid { grid-template-columns: 1fr 1fr; gap: 24px; }
+            .stat-number { font-size: 2em; }
+            .footer-grid { grid-template-columns: 1fr; }
+        }
+
+        /* === BACK TO TOP === */
+        .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px; height: 50px;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-light));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5em;
+            text-decoration: none;
+            box-shadow: var(--shadow-glow);
+            opacity: 0;
+            pointer-events: none;
+            transition: var(--transition);
+            z-index: 999;
+        }
+        .back-to-top.visible { opacity: 1; pointer-events: auto; }
+        .back-to-top:hover { transform: translateY(-4px); }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav>
+        <div class="container">
+            <a href="#" class="nav-logo">NaraGen Lab</a>
+            <ul class="nav-links">
+                <li><a href="#fitur">Fitur</a></li>
+                <li><a href="#cara-kerja">Cara Kerja</a></li>
+                <li><a href="#harga">Harga</a></li>
+                <li><a href="#faq">FAQ</a></li>
+            </ul>
+            <a href="#harga" class="nav-cta">Mulai Sekarang</a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-bg"></div>
+        <div class="hero-particles">
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+        </div>
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-badges">
+                    <span class="hero-badge"><span class="dot"></span> AI Multi-Agen</span>
+                    <span class="hero-badge"><span class="dot"></span> Telegram Native</span>
+                    <span class="hero-badge"><span class="dot"></span> 100% Transparan</span>
+                </div>
+                <h1>Sistem Berita AI yang Bekerja Seperti Tim Redaksi Sungguhan</h1>
+                <p>Otomatisasi seluruh produksi berita — riset, fakta, penulisan, editing, publikasi — dalam satu grup Telegram. Tanpa coding. Tanpa ribet.</p>
+                <div class="hero-ctas">
+                    <a href="#harga" class="btn-primary">Lihat Paket Harga →</a>
+                    <a href="#cara-kerja" class="btn-secondary">Cara Kerja</a>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="chat-mockup">
+                    <div class="chat-header">
+                        <div class="chat-avatar">N</div>
+                        <div class="chat-info">
+                            <h4>NaraGen Newsroom</h4>
+                            <p>● 5 agen online</p>
+                        </div>
+                    </div>
+                    <div class="chat-messages">
+                        <div class="chat-msg owner">/autopipeline tren AI di Indonesia 2026</div>
+                        <div class="chat-msg agent">
+                            <div class="agent-name">🔍 Raka — Research</div>
+                            Oke Om, gue cari dulu ya 🔍 Ketemu 8 sumber kok, dari Kompas, Detik, dan Litbang Kemdikbud...
+                        </div>
+                        <div class="chat-msg agent">
+                            <div class="agent-name">✅ Sari — Fact-Check</div>
+                            Udah gue cek semua Om. 12 fakta terverifikasi, 2 perlu revisi. Status: <strong>aman</strong> ✅
+                        </div>
+                        <div class="chat-msg agent">
+                            <div class="agent-name">✍️ Dimas — Writer</div>
+                            Draf udah jadi Om! Judulnya gue bikin catchy nih: "AI Gila-gilaan! Tapi Ini yang Bikin Indonesia Gak Kalah" 🔥
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Bar -->
+    <div class="stats-bar">
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-item animate-on-scroll">
+                    <div class="stat-number" data-count="15">0</div>
+                    <div class="stat-label">Menit per Artikel</div>
+                </div>
+                <div class="stat-item animate-on-scroll">
+                    <div class="stat-number" data-count="5">0</div>
+                    <div class="stat-label">Agen Profesional</div>
+                </div>
+                <div class="stat-item animate-on-scroll">
+                    <div class="stat-number" data-count="95">0</div>
+                    <div class="stat-label">% Akurasi Target</div>
+                </div>
+                <div class="stat-item animate-on-scroll">
+                    <div class="stat-number" data-count="100">0</div>
+                    <div class="stat-label">% Transparan</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Problem Section -->
+    <section id="masalah">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">Masalah</span>
+                <h2>Produksi Konten Itu Susah.<br>Kami Tahu Rasanya.</h2>
+            </div>
+            <div class="problem-grid">
+                <div class="problem-card animate-on-scroll">
+                    <div class="problem-icon">⏰</div>
+                    <h3>Waktu Terbuang</h3>
+                    <p>Riset sumber, verifikasi fakta, dan editing memakan berjam-jam yang bisa dipakai untuk hal lain.</p>
+                </div>
+                <div class="problem-card animate-on-scroll">
+                    <div class="problem-icon">🤖</div>
+                    <h3>Konten AI Terasa Robotik</h3>
+                    <p>AI generik menulis kalimat seragam, klise, dan tidak natural. Pembaca langsung tahu itu AI.</p>
+                </div>
+                <div class="problem-card animate-on-scroll">
+                    <div class="problem-icon">⚠️</div>
+                    <h3>Plagiarisme & Hukum</h3>
+                    <p>Konten copy-paste atau rewrite tipis berisiko dihapus platform atau dituntut hukum.</p>
+                </div>
+                <div class="problem-card animate-on-scroll">
+                    <div class="problem-icon">💸</div>
+                    <h3>Biaya Tinggi</h3>
+                    <p>Mempekerjakan tim redaksi penuh mahal. Freelancer tidak konsisten kualitasnya.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="fitur">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">Fitur</span>
+                <h2>5 Agen, 1 Komando.<br>Hasil Luar Biasa.</h2>
+                <p>Setiap agen memiliki kepribadian, keahlian, dan gate kualitas tersendiri.</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card animate-on-scroll">
+                    <div class="feature-icon research">🔍</div>
+                    <h3>Raka — Research</h3>
+                    <p>Mencari sumber, mengumpulkan bukti, dan membangun paket riset.</p>
+                    <ul class="feature-list">
+                        <li>Triangulasi sumber independen</li>
+                        <li>Web search real-time</li>
+                        <li>Analisis tren terkini</li>
+                    </ul>
+                </div>
+                <div class="feature-card animate-on-scroll">
+                    <div class="feature-icon factcheck">✅</div>
+                    <h3>Sari — Fact-Check</h3>
+                    <p>Memverifikasi setiap klaim sebelum diteruskan ke penulis.</p>
+                    <ul class="feature-list">
+                        <li>C.R.A.A.P. test methodology</li>
+                        <li>Verifikasi angka & tanggal</li>
+                        <li>Status: aman / revisi / stop</li>
+                    </ul>
+                </div>
+                <div class="feature-card animate-on-scroll">
+                    <div class="feature-icon writer">✍️</div>
+                    <h3>Dimas — Writer</h3>
+                    <p>Menulis artikel original dari fakta terverifikasi.</p>
+                    <ul class="feature-list">
+                        <li>Gaya jurnalistik natural</li>
+                        <li>Inverted pyramid structure</li>
+                        <li>Multi-platform format</li>
+                    </ul>
+                </div>
+                <div class="feature-card animate-on-scroll">
+                    <div class="feature-icon editor">📝</div>
+                    <h3>Maya — Editor</h3>
+                    <p>Editing + humanisasi + anti-plagiat. Dua gate wajib.</p>
+                    <ul class="feature-list">
+                        <li>Bunuh pola tulisan AI</li>
+                        <li>Rewrite jika similarity > 15%</li>
+                        <li>AP Stylebook standard</li>
+                    </ul>
+                </div>
+                <div class="feature-card animate-on-scroll">
+                    <div class="feature-icon publisher">🚀</div>
+                    <h3>Ari — Publisher</h3>
+                    <p>Format final untuk semua platform + SEO optimization.</p>
+                    <ul class="feature-list">
+                        <li>SEO title & meta description</li>
+                        <li>Thread X + LinkedIn + Instagram</li>
+                        <li>Monetization safety check</li>
+                    </ul>
+                </div>
+                <div class="feature-card animate-on-scroll">
+                    <div class="feature-icon pipeline">⚙️</div>
+                    <h3>Orkestrator</h3>
+                    <p>Mengatur alur otomatis dari riset sampai publikasi.</p>
+                    <ul class="feature-list">
+                        <li>Autopipeline 1 perintah</li>
+                        <li>Gate enforcement</li>
+                        <li>Watchdog 3 lapis</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section id="cara-kerja" style="background: var(--bg-secondary); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">Cara Kerja</span>
+                <h2>1 Perintah.<br>5 Agen Bergerak.</h2>
+                <p>Cukup ketik <code style="background: rgba(99,102,241,0.1); color: #a5b4fc; padding: 2px 8px; border-radius: 4px;">/autopipeline</code> di grup Telegram Anda.</p>
+            </div>
+            <div class="pipeline-visual">
+                <div class="pipeline-step animate-on-scroll">
+                    <div class="step-icon">👤</div>
+                    <h4>Owner</h4>
+                    <p>Ketik topik</p>
+                </div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-step animate-on-scroll">
+                    <div class="step-icon">🔍</div>
+                    <h4>Raka</h4>
+                    <p>Cari sumber</p>
+                </div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-step animate-on-scroll">
+                    <div class="step-icon">✅</div>
+                    <h4>Sari</h4>
+                    <p>Cek fakta</p>
+                </div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-step animate-on-scroll">
+                    <div class="step-icon">✍️</div>
+                    <h4>Dimas</h4>
+                    <p>Tulis artikel</p>
+                </div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-step animate-on-scroll">
+                    <div class="step-icon">📝</div>
+                    <h4>Maya</h4>
+                    <p>Edit & review</p>
+                </div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-step animate-on-scroll">
+                    <div class="step-icon">🚀</div>
+                    <h4>Ari</h4>
+                    <p>Siap publish</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section id="testimoni">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">Testimoni</span>
+                <h2>Apa Kata Mereka yang Telah Menggunakan</h2>
+            </div>
+            <div class="testimonial-grid">
+                <div class="testimonial-card animate-on-scroll">
+                    <div class="testimonial-stars">★★★★★</div>
+                    <p class="testimonial-text">"Sistem ini mengubah cara kami memproduksi konten. Dari 1 artikel per hari, sekarang bisa 5-10 artikel dengan kualitas lebih baik dan proses yang transparan."</p>
+                    <div class="testimonial-author">
+                        <div class="testimonial-avatar purple">BA</div>
+                        <div class="testimonial-author-info">
+                            <h4>Budi Santoso</h4>
+                            <p>Pemilik Portal Berita</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card animate-on-scroll">
+                    <div class="testimonial-stars">★★★★★</div>
+                    <p class="testimonial-text">"Kepribadian agen-agennya sangat natural. Pembaca tidak sadar ini AI. Engagement naik 3x lipat karena kontennya terasa seperti ditulis manusia."</p>
+                    <div class="testimonial-author">
+                        <div class="testimonial-avatar green">SR</div>
+                        <div class="testimonial-author-info">
+                            <h4>Sari Wulandari</h4>
+                            <p>Content Manager</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section id="harga" style="background: var(--bg-secondary); border-top: 1px solid var(--border);">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">Harga</span>
+                <h2>Pilih Paket yang Sesuai</h2>
+                <p>Investasi sekali untuk sistem yang bekerja 24/7.</p>
+            </div>
+            <div class="pricing-grid">
+                <div class="pricing-card animate-on-scroll">
+                    <h3>Basic Blueprint</h3>
+                    <div class="pricing-price">Rp 299K</div>
+                    <ul class="pricing-features">
+                        <li>Ebook tutorial lengkap (PDF)</li>
+                        <li>Flow diagram & arsitektur</li>
+                        <li>Checklist implementasi</li>
+                        <li>Email support</li>
+                    </ul>
+                    <a href="#" class="btn-secondary" style="width: 100%; justify-content: center;">Pilih Basic</a>
+                </div>
+                <div class="pricing-card featured animate-on-scroll">
+                    <div class="pricing-badge">PALING POPULER</div>
+                    <h3>Complete Kit</h3>
+                    <div class="pricing-price">Rp 699K</div>
+                    <ul class="pricing-features">
+                        <li><strong>Semua fitur Basic</strong></li>
+                        <li>5 Template SOUL.md (copy-paste)</li>
+                        <li>Config recipes siap pakai</li>
+                        <li>Video tutorial setup</li>
+                        <li>Group komunitas eksklusif</li>
+                        <li>3 bulan update konten</li>
+                    </ul>
+                    <a href="#" class="btn-primary" style="width: 100%; justify-content: center;">Pilih Complete</a>
+                </div>
+                <div class="pricing-card animate-on-scroll">
+                    <h3>Premium 1-on-1</h3>
+                    <div class="pricing-price">Rp 1.499K</div>
+                    <ul class="pricing-features">
+                        <li><strong>Semua fitur Complete</strong></li>
+                        <li>Instalasi virtual 1-on-1 (2 jam)</li>
+                        <li>Kustomisasi nama & persona</li>
+                        <li>Setup lengkap hingga live</li>
+                        <li>Prioritas support 6 bulan</li>
+                    </ul>
+                    <a href="#" class="btn-secondary" style="width: 100%; justify-content: center;">Pilih Premium</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section id="faq">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">FAQ</span>
+                <h2>Pertanyaan yang Sering Diajukan</h2>
+            </div>
+            <div class="faq-container">
+                <div class="faq-item animate-on-scroll">
+                    <button class="faq-question">
+                        Apakah saya perlu bisa coding?
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
+                            Tidak perlu! Tutorial kami dirancang untuk pemula. Cukup salin-tempel perintah ke terminal dan ikuti panduan visual kami langkah demi langkah.
+                        </div>
+                    </div>
+                </div>
+                <div class="faq-item animate-on-scroll">
+                    <button class="faq-question">
+                        Berapa lama setup sampai bisa dipakai?
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
+                            Estimasi 7 hari untuk build dari nol. Jika pilih paket Premium dengan instalasi 1-on-1, bisa selesai dalam 1 hari kerja bersama kami.
+                        </div>
+                    </div>
+                </div>
+                <div class="faq-item animate-on-scroll">
+                    <button class="faq-question">
+                        Apakah konten yang dihasilkan original?
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
+                            Ya. Ada 2 gate wajib: humanisasi (anti-AI-sounding) dan anti-plagiat. Setiap konten melewati similarity check sebelum disetujui. Target originality > 85%.
+                        </div>
+                    </div>
+                </div>
+                <div class="faq-item animate-on-scroll">
+                    <button class="faq-question">
+                        Bisa untuk bahasa apa saja?
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
+                            Saat ini fokus Bahasa Indonesia. Roadmap v1.1 sudah merencanakan dukungan multi-bahasa (English, Jawa, Sunda) dan lainnya.
+                        </div>
+                    </div>
+                </div>
+                <div class="faq-item animate-on-scroll">
+                    <button class="faq-question">
+                        Bagaimana jika sistem error atau berhenti?
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
+                            Ada 3 lapis watchdog yang otomatis restart sistem setiap 15 menit. Jika ada masalah yang tidak bisa diatasi, sistem akan berhenti dan memberi notifikasi ke Telegram Anda.
+                        </div>
+                    </div>
+                </div>
+                <div class="faq-item animate-on-scroll">
+                    <button class="faq-question">
+                        Apakah bisa dikustomisasi untuk brand saya?
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
+                            Sangat bisa! Itu gunanya file SOUL.md. Anda bisa ganti nama agen, gaya bahasa, bahkan kepribadian sesuai brand. Kami juga menyediakan paket white-label.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <div class="container">
+        <div class="cta-section animate-on-scroll">
+            <h2>Siap Membangun Tim Redaksi AI Anda?</h2>
+            <p>Bergabung dengan yang telah membuktikan bahwa AI bisa menghasilkan konten berkualitas manusia.</p>
+            <div class="cta-buttons">
+                <a href="#harga" class="btn-primary">Lihat Paket Harga</a>
+                <a href="#" class="btn-secondary" style="border-color: rgba(255,255,255,0.3); color: white;">Minta Demo Langsung</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <h3>NaraGen Lab</h3>
+                    <p>Sistem berita AI multi-agent yang transparan, kredibel, dan siap untuk monetisasi jangka panjang.</p>
+                </div>
+                <div class="footer-col">
+                    <h4>Produk</h4>
+                    <ul>
+                        <li><a href="#">Fitur</a></li>
+                        <li><a href="#">Harga</a></li>
+                        <li><a href="#">Demo</a></li>
+                        <li><a href="#">Roadmap</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Resources</h4>
+                    <ul>
+                        <li><a href="#">Tutorial</a></li>
+                        <li><a href="#">Dokumentasi</a></li>
+                        <li><a href="#">Blog</a></li>
+                        <li><a href="#">Komunitas</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Kontak</h4>
+                    <ul>
+                        <li><a href="#">Email</a></li>
+                        <li><a href="#">Telegram</a></li>
+                        <li><a href="#">WhatsApp</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Naragen Studio | Dibuat dengan ❤️ di Jakarta</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Back to Top -->
+    <a href="#" class="back-to-top" id="backToTop">↑</a>
+
+    <script>
+        // Scroll animations
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+        document.querySelectorAll('.animate-on-scroll').forEach(el => observer.observe(el));
+
+        // Counter animation
+        function animateCounter(el) {
+            const target = parseInt(el.dataset.count);
+            const duration = 2000;
+            const step = target / (duration / 16);
+            let current = 0;
+            const timer = setInterval(() => {
+                current += step;
+                if (current >= target) {
+                    el.textContent = target;
+                    clearInterval(timer);
+                } else {
+                    el.textContent = Math.floor(current);
+                }
+            }, 16);
+        }
+
+        const counterObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    animateCounter(entry.target);
+                    counterObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.5 });
+
+        document.querySelectorAll('.stat-number').forEach(el => counterObserver.observe(el));
+
+        // FAQ toggle
+        document.querySelectorAll('.faq-question').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const item = btn.parentElement;
+                const answer = item.querySelector('.faq-answer');
+                const isActive = item.classList.contains('active');
+
+                // Close all
+                document.querySelectorAll('.faq-item').forEach(i => {
+                    i.classList.remove('active');
+                    i.querySelector('.faq-answer').style.maxHeight = null;
+                });
+
+                // Open clicked
+                if (!isActive) {
+                    item.classList.add('active');
+                    answer.style.maxHeight = answer.scrollHeight + 'px';
+                }
+            });
+        });
+
+        // Back to top
+        const backToTop = document.getElementById('backToTop');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 500) {
+                backToTop.classList.add('visible');
+            } else {
+                backToTop.classList.remove('visible');
+            }
+        });
+        backToTop.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        // Smooth scroll for nav links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
