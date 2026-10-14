@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financial Analysis — AI Content Team</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap');
+
+        :root {
+            --bg-primary: #0a0e1a;
+            --bg-secondary: #111827;
+            --bg-card: #1e293b;
+            --bg-card-hover: #263348;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --accent-primary: #6366f1;
+            --accent-light: #818cf8;
+            --accent-glow: rgba(99,102,241,0.3);
+            --accent-success: #10b981;
+            --accent-warning: #f59e0b;
+            --accent-danger: #ef4444;
+            --accent-pink: #ec4899;
+            --accent-cyan: #06b6d4;
+            --accent-orange: #f97316;
+            --border: #334155;
+            --radius: 16px;
+            --radius-sm: 10px;
+            --shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+            --shadow-glow: 0 0 40px var(--accent-glow);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.7;
+            font-size: 15px;
+        }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 40px 24px; }
+
+        /* Hero */
+        .hero {
+            text-align: center;
+            padding: 80px 40px;
+            background: linear-gradient(135deg, #1e1b4b, #312e81, #4c1d95);
+            border-radius: 20px;
+            margin-bottom: 48px;
+            border: 1px solid var(--border);
+        }
+        .hero h1 {
+            font-size: 3em;
+            font-weight: 800;
+            background: linear-gradient(135deg, #a5b4fc, #c4b5fd);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 16px;
+        }
+        .hero p { font-size: 1.1em; color: var(--text-secondary); margin-bottom: 24px; }
+        .hero .meta-badges { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+        .badge {
+            background: rgba(99,102,241,0.15);
+            border: 1px solid rgba(99,102,241,0.3);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            color: #a5b4fc;
+            font-weight: 600;
+        }
+
+        /* Section */
+        .section { margin-bottom: 60px; }
+        .section h2 {
+            font-size: 2em;
+            font-weight: 800;
+            margin-bottom: 24px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--border);
+            color: var(--accent-light);
+        }
+        .section h3 {
+            font-size: 1.3em;
+            font-weight: 700;
+            margin: 32px 0 16px;
+            color: var(--accent-primary);
+        }
+        .section p { color: var(--text-secondary); margin-bottom: 16px; }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0 32px;
+            font-size: 0.9em;
+            background: var(--bg-card);
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+        }
+        th {
+            background: rgba(99,102,241,0.1);
+            color: #a5b4fc;
+            font-weight: 700;
+            text-align: left;
+            padding: 14px 16px;
+            border-bottom: 2px solid var(--border);
+        }
+        td {
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(51,65,85,0.5);
+            color: var(--text-secondary);
+            vertical-align: top;
+        }
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: rgba(99,102,241,0.03); }
+        td strong { color: var(--text-primary); }
+
+        /* Cost cards */
+        .cost-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin: 24px 0;
+        }
+        .cost-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 28px;
+            transition: var(--transition);
+        }
+        .cost-card:hover {
+            border-color: var(--accent-primary);
+            transform: translateY(-4px);
+        }
+        .cost-card h4 {
+            font-size: 1.1em;
+            margin-bottom: 12px;
+            color: var(--accent-light);
+        }
+        .cost-card .price {
+            font-size: 1.8em;
+            font-weight: 800;
+            color: var(--accent-success);
+            margin-bottom: 8px;
+        }
+        .cost-card .price span { font-size: 0.5em; font-weight: 400; color: var(--text-muted); }
+        .cost-card p { font-size: 0.85em; color: var(--text-muted); margin: 0; }
+
+        /* Summary box */
+        .summary-box {
+            background: linear-gradient(135deg, rgba(99,102,241,0.1), rgba(139,92,246,0.05));
+            border: 1px solid rgba(99,102,241,0.2);
+            border-radius: var(--radius);
+            padding: 32px;
+            margin: 24px 0;
+        }
+        .summary-box h4 { color: var(--accent-light); margin-bottom: 16px; }
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(51,65,85,0.5);
+        }
+        .summary-row:last-child { border-bottom: none; }
+        .summary-row .label { color: var(--text-secondary); }
+        .summary-row .value { font-weight: 700; color: var(--text-primary); }
+        .summary-row .value.profit { color: var(--accent-success); }
+        .summary-row .value.cost { color: var(--accent-danger); }
+
+        /* Platform logos */
+        .platform-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 16px;
+            margin: 24px 0;
+        }
+        .platform-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 16px;
+            text-align: center;
+            font-size: 0.85em;
+            color: var(--text-secondary);
+        }
+        .platform-item strong { display: block; color: var(--text-primary); margin-bottom: 4px; }
+
+        /* Profit highlight */
+        .profit-highlight {
+            background: linear-gradient(135deg, rgba(16,185,129,0.1), rgba(5,150,105,0.05));
+            border: 1px solid rgba(16,185,129,0.3);
+            border-radius: var(--radius);
+            padding: 32px;
+            text-align: center;
+            margin: 32px 0;
+        }
+        .profit-highlight h4 { color: var(--accent-success); font-size: 1.3em; margin-bottom: 16px; }
+        .profit-number {
+            font-size: 3em;
+            font-weight: 900;
+            background: linear-gradient(135deg, #34d399, #10b981);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .profit-detail { color: var(--text-secondary); margin-top: 8px; }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2em; }
+            .section h2 { font-size: 1.5em; }
+            .cost-grid { grid-template-columns: 1fr; }
+            .platform-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        /* Print styles */
+        @media print {
+            body { background: white; color: black; }
+            .hero { background: #f3f4f6; color: black; }
+            .cost-card, table, .summary-box { break-inside: avoid; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="hero">
+    <h1>Financial Analysis</h1>
+    <p>Perbandingan Biaya API, Operasional & Proyeksi Keuntungan</p>
+    <div class="meta-badges">
+        <span class="badge">Estimasi 2026</span>
+        <span class="badge">Update Terakhir: Oktober 2026</span>
+    </div>
+</div>
+
+<div class="container">
+
+    <!-- SECTION 1: API COSTS -->
+    <div class="section">
+        <h2>1. Perbandingan Biaya API Model AI</h2>
+        <p>Biaya token untuk 5 agen AI (Research, Verification, Writer, Editor, Publisher) per artikel rata-rata.</p>
+
+        <table>
+            <tr>
+                <th>Provider</th>
+                <th>Model</th>
+                <th>Input/1K Token</th>
+                <th>Output/1K Token</th>
+                <th>Biaya/Artikel (Estimasi)</th>
+                <th>Ketersediaan</th>
+            </tr>
+            <tr>
+                <td><strong>Anthropic</strong></td>
+                <td>Claude 3.5 Sonnet</td>
+                <td>$0.003</td>
+                <td>$0.015</td>
+                <td>Rp 15.000 - 25.000</td>
+                <td>API Only</td>
+            </tr>
+            <tr>
+                <td><strong>OpenAI</strong></td>
+                <td>GPT-4o</td>
+                <td>$0.005</td>
+                <td>$0.015</td>
+                <td>Rp 20.000 - 35.000</td>
+                <td>API + ChatGPT</td>
+            </tr>
+            <tr>
+                <td><strong>Google Gemini</strong></td>
+                <td>Gemini 1.5 Pro</td>
+                <td>$0.00125</td>
+                <td>$0.005</td>
+                <td>Rp 8.000 - 15.000</td>
+                <td>API Free Tier</td>
+            </tr>
+            <tr>
+                <td><strong>Nous Research</strong></td>
+                <td>Laguna / StepFun</td>
+                <td>Gratis</td>
+                <td>Gratis</td>
+                <td>Rp 0</td>
+                <td>Free Tier</td>
+            </tr>
+            <tr>
+                <td><strong>DeepSeek</strong></td>
+                <td>DeepSeek V3</td>
+                <td>$0.00027</td>
+                <td>$0.0011</td>
+                <td>Rp 3.000 - 8.000</td>
+                <td>Very Cheap</td>
+            </tr>
+        </table>
+
+        <div class="summary-box">
+            <h4>💰 Kesimpulan API</h4>
+            <div class="summary-row">
+                <span class="label">Pilihan Termurah</span>
+                <span class="value">DeepSeek (~Rp 5.000/artikel)</span>
+            </div>
+            <div class="summary-row">
+                <span class="label">Pilihan Gratis</span>
+                <span class="value">Nous Research (Rp 0)</span>
+            </div>
+            <div class="summary-row">
+                <span class="label">Pilihan Premium</span>
+                <span class="value">Anthropic Claude (~Rp 20.000/artikel)</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECTION 2: ANTI-PLAGIARISM -->
+    <div class="section">
+        <h2>2. Biaya Layanan Anti-Plagiat</h2>
+
+        <table>
+            <tr>
+                <th>Layanan</th>
+                <th>Model Harga</th>
+                <th>Biaya/Artikel</th>
+                <th>Akurasi</th>
+                <th>Rekomendasi</th>
+            </tr>
+            <tr>
+                <td><strong>Turnitin</strong></td>
+                <td>Institution only</td>
+                <td>Rp 50.000+</td>
+                <td>99%</td>
+                <td>Tidak feasible untuk UMKM</td>
+            </tr>
+            <tr>
+                <td><strong>Grammarly Premium</strong></td>
+                <td>Rp 900.000/tahun</td>
+                <td>Rp 25.000</td>
+                <td>85%</td>
+                <td>Basic check</td>
+            </tr>
+            <tr>
+                <td><strong>Quetext</strong></td>
+                <td>Rp 400.000/tahun</td>
+                <td>Rp 15.000</td>
+                <td>90%</td>
+                <td>Good balance</td>
+            </tr>
+            <tr>
+                <td><strong>Copyleaks</strong></td>
+                <td>Pay per page</td>
+                <td>Rp 10.000</td>
+                <td>95%</td>
+                <td>Pay as you go</td>
+            </tr>
+            <tr>
+                <td><strong>Manual + AI</strong></td>
+                <td>Internal</td>
+                <td>Rp 0</td>
+                <td>80%</td>
+                <td>Gate Editor Agent</td>
+            </tr>
+        </table>
+
+        <div class="summary-box">
+            <h4>💡 Strategi Anti-Plagiat</h4>
+            <div class="summary-row">
+                <span class="label">Pendekatan</span>
+                <span class="value">AI Editor Agent (built-in) + Spot check manual</span>
+            </div>
+            <div class="summary-row">
+                <span class="label">Biaya Rata-rata</span>
+                <span class="value">Rp 0 - 5.000/artikel</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECTION 3: IMAGE GENERATION -->
+    <div class="section">
+        <h2>3. Biaya Generate Gambar (Per Platform)</h2>
+
+        <table>
+            <tr>
+                <th>Layanan</th>
+                <th>Model</th>
+                <th>Biaya/Gambar</th>
+                <th>Kualitas</th>
+                <th>Format Output</th>
+            </tr>
+            <tr>
+                <td><strong>DALL-E 3</strong></td>
+                <td>OpenAI API</td>
+                <td>Rp 15.000 - 25.000</td>
+                <td>Excellent</td>
+                <td>1024x1024, 1792x1024</td>
+            </tr>
+            <tr>
+                <td><strong>Midjourney</strong></td>
+                <td>V6</td>
+                <td>Rp 50.000 - 80.000</td>
+                <td>Best Quality</td>
+                <td>Multiple aspect ratios</td>
+            </tr>
+            <tr>
+                <td><strong>Stable Diffusion</strong></td>
+                <td>Self-hosted</td>
+                <td>Rp 5.000 - 10.000</td>
+                <td>Very Good</td>
+                <td>Customizable</td>
+            </tr>
+            <tr>
+                <td><strong>Leonardo AI</strong></td>
+                <td>Free tier</td>
+                <td>Rp 0 - 15.000</td>
+                <td>Good</td>
+                <td>Multiple styles</td>
+            </tr>
+            <tr>
+                <td><strong>Ideogram</strong></td>
+                <td>Free tier</td>
+                <td>Rp 0 - 10.000</td>
+                <td>Good for text</td>
+                <td>Text in images</td>
+            </tr>
+        </table>
+
+        <h3>Format Gambar per Platform (10 Teratas Indonesia)</h3>
+
+        <div class="platform-grid">
+            <div class="platform-item"><strong>Website/Blog</strong>1200x630px (OG), 800x400px (hero), 400x400px (thumbnail)</div>
+            <div class="platform-item"><strong>Instagram Post</strong>1080x1080px (square), 1080x1350px (portrait)</div>
+            <div class="platform-item"><strong>Instagram Story</strong>1080x1920px (vertical)</div>
+            <div class="platform-item"><strong>Facebook Post</strong>1200x630px (landscape)</div>
+            <div class="platform-item"><strong>Twitter/X</strong>1600x900px (header), 1200x675px (post)</div>
+            <div class="platform-item"><strong>LinkedIn Post</strong>1200x627px (landscape)</div>
+            <div class="platform-item"><strong>LinkedIn Banner</strong>1584x396px (company)</div>
+            <div class="platform-item"><strong>YouTube Thumbnail</strong>1280x720px (landscape)</div>
+            <div class="platform-item"><strong>TikTok Cover</strong>1080x1920px (vertical)</div>
+            <div class="platform-item"><strong>Pinterest</strong>1000x1500px (2:3)</div>
+            <div class="platform-item"><strong>WhatsApp Status</strong>1080x1920px (vertical)</div>
+            <div class="platform-item"><strong>Email Header</strong>600x200px (landscape)</div>
+        </div>
+
+        <div class="summary-box">
+            <h4>💰 Estimasi Biaya Gambar</h4>
+            <div class="summary-row">
+                <span class="label">Gambar per artikel (1-2 gambar)</span>
+                <span class="value">Rp 30.000 - 160.000</span>
+            </div>
+            <div class="summary-row">
+                <span class="label">Gambar per bulan (10 artikel)</span>
+                <span class="value">Rp 300.000 - 1.600.000</span>
+            </div>
+            <div class="summary-row">
+                <span class="label">Solusi Termurah</span>
+                <span class="value">Leonardo AI Free (Rp 0)</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECTION 4: HOSTING & OPERATIONAL -->
+    <div class="section">
+        <h2>4. Biaya Hosting & Operasional</h2>
+
+        <table>
+            <tr>
+                <th>Item</th>
+                <th>Provider</th>
+                <th>Spesifikasi</th>
+                <th>Biaya/Bulan</th>
+            </tr>
+            <tr>
+                <td><strong>VPS/Server</strong></td>
+                <td>DigitalOcean / AWS Lightsail</td>
+                <td>2 vCPU, 4GB RAM, 80GB SSD</td>
+                <td>Rp 300.000 - 500.000</td>
+            </tr>
+            <tr>
+                <td><strong>Domain</strong></td>
+                <td>Namecheap / Cloudflare</td>
+                <td>.com / .id</td>
+                <td>Rp 150.000 - 250.000/tahun</td>
+            </tr>
+            <tr>
+                <td><strong>SSL Certificate</strong></td>
+                <td>Let's Encrypt</td>
+                <td>Free</td>
+                <td>Rp 0</td>
+            </tr>
+            <tr>
+                <td><strong>CDN</strong></td>
+                <td>Cloudflare</td>
+                <td>Free tier</td>
+                <td>Rp 0</td>
+            </tr>
+            <tr>
+                <td><strong>Email Service</strong></td>
+                <td>Google Workspace / Zoho</td>
+                <td>Custom domain</td>
+                <td>Rp 50.000 - 100.000</td>
+            </tr>
+            <tr>
+                <td><strong>Backup Storage</strong></td>
+                <td>AWS S3 / Backblaze</td>
+                <td>100GB</td>
+                <td>Rp 50.000 - 100.000</td>
+            </tr>
+            <tr>
+                <td><strong>Monitoring</strong></td>
+                <td>UptimeRobot / Better Stack</td>
+                <td>Free tier</td>
+                <td>Rp 0</td>
+            </tr>
+            <tr>
+                <td><strong>VPN</strong></td>
+                <td>Mullvad / ProtonVPN</td>
+                <td>Privacy</td>
+                <td>Rp 50.000</td>
+            </tr>
+        </table>
+
+        <div class="summary-box">
+            <h4>📊 Total Biaya Operasional Bulanan</h4>
+            <div class="summary-row">
+                <span class="label">Server + Domain + Email</span>
+                <span class="value cost">Rp 500.000 - 850.000</span>
+            </div>
+            <div class="summary-row">
+                <span class="label">+ API Costs (5 artikel/hari)</span>
+                <span class="value cost">Rp 150.000 - 1.050.000</span>
+            </div>
+            <div class="summary-row">
+                <span class="label">+ Image Generation</span>
+                <span class="value cost">Rp 300.000 - 1.600.000</span>
+            </div>
+            <div class="summary-row">
+                <span class="label"><strong>TOTAL OPERASIONAL</strong></span>
+                <span class="value cost"><strong>Rp 950.000 - 3.500.000/bln</strong></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECTION 5: REVENUE PROJECTION -->
+    <div class="section">
+        <h2>5. Proyeksi Pendapatan vs Biaya</h2>
+
+        <table>
+            <tr>
+                <th>Skenario</th>
+                <th>Jumlah Pelanggan</th>
+                <th>Paket Dominan</th>
+                <th>Pendapatan/Bulan</th>
+                <th>Biaya Operasional</th>
+                <th>Keuntungan</th>
+                <th>Margin</th>
+            </tr>
+            <tr>
+                <td><strong>Conservative</strong></td>
+                <td>5 (Starter)</td>
+                <td>Rp 299.000</td>
+                <td>Rp 1.495.000</td>
+                <td>Rp 2.000.000</td>
+                <td style="color: var(--accent-danger)">-Rp 505.000</td>
+                <td>-34%</td>
+            </tr>
+            <tr>
+                <td><strong>Moderate</strong></td>
+                <td>10 (5 Starter + 5 Pro)</td>
+                <td>Mixed</td>
+                <td>Rp 4.990.000</td>
+                <td>Rp 3.500.000</td>
+                <td style="color: var(--accent-success)">Rp 1.490.000</td>
+                <td>30%</td>
+            </tr>
+            <tr>
+                <td><strong>Target</strong></td>
+                <td>20 (5+10+5)</td>
+                <td>Mixed</td>
+                <td>Rp 11.475.000</td>
+                <td>Rp 5.000.000</td>
+                <td style="color: var(--accent-success)">Rp 6.475.000</td>
+                <td>56%</td>
+            </tr>
+            <tr>
+                <td><strong>Optimistic</strong></td>
+                <td>50 (10+30+10)</td>
+                <td>Mixed</td>
+                <td>Rp 31.435.000</td>
+                <td>Rp 12.000.000</td>
+                <td style="color: var(--accent-success)">Rp 19.435.000</td>
+                <td>62%</td>
+            </tr>
+        </table>
+
+        <div class="profit-highlight">
+            <h4>🎯 Break-Even Point</h4>
+            <div class="profit-number">8-12 Pelanggan</div>
+            <p class="profit-detail">Dengan campuran paket Starter + Professional, break even tercapai dalam 2-3 bulan pertama</p>
+        </div>
+    </div>
+
+    <!-- SECTION 6: ROI ANALYSIS -->
+    <div class="section">
+        <h2>6. Analisis ROI per Paket</h2>
+
+        <table>
+            <tr>
+                <th>Paket</th>
+                <th>Harga</th>
+                <th>Biaya API/Artikel</th>
+                <th>Artikel/Bulan</th>
+                <th>Total Biaya</th>
+                <th>Margin</th>
+                <th>ROI</th>
+            </tr>
+            <tr>
+                <td><strong>Starter</strong></td>
+                <td>Rp 299.000</td>
+                <td>Rp 10.000</td>
+                <td>30</td>
+                <td>Rp 300.000</td>
+                <td>-1%</td>
+                <td>Loss leader</td>
+            </tr>
+            <tr>
+                <td><strong>Professional</strong></td>
+                <td>Rp 699.000</td>
+                <td>Rp 20.000</td>
+                <td>150</td>
+                <td>Rp 3.000.000</td>
+                <td>-332%</td>
+                <td>Volume game</td>
+            </tr>
+            <tr>
+                <td><strong>Enterprise</strong></td>
+                <td>Rp 1.499.000</td>
+                <td>Rp 30.000</td>
+                <td>Unlimited</td>
+                <td>Rp 5.000.000+</td>
+                <td>TBD</td>
+                <td>Custom deal</td>
+            </tr>
+        </table>
+
+        <div class="summary-box">
+            <h4>📈 Strategi Profit</h4>
+            <div class="summary-row">
+                <span class="label">Starter</span>
+                <span class="value">Loss leader — tarik masuk, upsell ke Pro</span>
+            </div>
+            <div class="summary-row">
+                <span class="label">Professional</span>
+                <span class="value">Volume game — margin kecil, quantity tinggi</span>
+            </div>
+            <div class="summary-row">
+                <span class="label">Enterprise</span>
+                <span class="value">Custom deal — negosiasi langsung, margin terbaik</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECTION 7: RECOMMENDATION -->
+    <div class="section">
+        <h2>7. Rekomendasi Strategi Harga</h2>
+
+        <table>
+            <tr>
+                <th>Pendekatan</th>
+                <th>Model</th>
+                <th>Keuntungan</th>
+                <th>Kerugian</th>
+                <th>Rekomendasi</th>
+            </tr>
+            <tr>
+                <td><strong>Cost Plus</strong></td>
+                <td>Biaya + 30%</td>
+                <td>Simpel, pasti profit</td>
+                <td>Tidak kompetitif</td>
+                <td>Tidak disarankan</td>
+            </tr>
+            <tr>
+                <td><strong>Value Based</strong></td>
+                <td>Sesuai nilai bisnis</td>
+                <td>Margin tinggi</td>
+                <td>Sulit justify ke klien</td>
+                <td>Cocok untuk Enterprise</td>
+            </tr>
+            <tr>
+                <td><strong>Competitive</strong></td>
+                <td>Ikut harga pasar</td>
+                <td>Mudah jual</td>
+                <td>Margin tipis</td>
+                <td>Cocok untuk Starter/Pro</td>
+            </tr>
+            <tr>
+                <td><strong>Tiered (Recommended)</strong></td>
+                <td>Good-Better-Best</td>
+                <td>Psychology pricing, upsell path</td>
+                <td>Perlu strategi marketing</td>
+                <td>⭐ Best approach</td>
+            </tr>
+        </table>
+
+        <div class="profit-highlight">
+            <h4>💡 Kesimpulan</h4>
+            <p class="profit-detail" style="font-size: 1.1em;">
+                Gunakan <strong>Tiered Pricing</strong> dengan model Good-Better-Best.
+                Starter sebagai entry point (loss leader), Professional sebagai volume driver,
+                Enterprise sebagai margin booster. Target: <strong>30-40% margin bersih</strong>
+                dengan 20-50 pelanggan aktif.
+            </p>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <div style="text-align: center; padding: 40px; color: var(--text-muted); font-size: 0.85em; border-top: 1px solid var(--border); margin-top: 60px;">
+        <p><strong>AI Content Team</strong> — Financial Analysis v1.0</p>
+        <p>© 2026 | Estimasi berdasarkan harga pasar Oktober 2026</p>
+    </div>
+
+</div>
+
+</body>
+</html>
