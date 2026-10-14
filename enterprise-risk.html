@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enterprise Package Risk Analysis — AI Content Team</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+        :root {
+            --bg-primary: #0a0e1a;
+            --bg-secondary: #111827;
+            --bg-card: #1e293b;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --accent-primary: #6366f1;
+            --accent-light: #818cf8;
+            --accent-success: #10b981;
+            --accent-warning: #f59e0b;
+            --accent-danger: #ef4444;
+            --accent-cyan: #06b6d4;
+            --border: #334155;
+            --radius: 16px;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.7;
+            font-size: 15px;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 40px 24px; }
+        .hero {
+            text-align: center;
+            padding: 80px 40px;
+            background: linear-gradient(135deg, #1e1b4b, #312e81, #4c1d95);
+            border-radius: 20px;
+            margin-bottom: 48px;
+            border: 1px solid var(--border);
+        }
+        .hero h1 {
+            font-size: 3em;
+            font-weight: 800;
+            background: linear-gradient(135deg, #a5b4fc, #c4b5fd);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 16px;
+        }
+        .hero p { font-size: 1.1em; color: var(--text-secondary); margin-bottom: 24px; }
+        .hero .meta-badges { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+        .badge {
+            background: rgba(99,102,241,0.15);
+            border: 1px solid rgba(99,102,241,0.3);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            color: #a5b4fc;
+            font-weight: 600;
+        }
+        .section { margin-bottom: 60px; }
+        .section h2 {
+            font-size: 2em;
+            font-weight: 800;
+            margin-bottom: 24px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--border);
+            color: var(--accent-light);
+        }
+        .section h3 { font-size: 1.3em; font-weight: 700; margin: 32px 0 16px; color: var(--accent-primary); }
+        .section p { color: var(--text-secondary); margin-bottom: 16px; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0 32px;
+            font-size: 0.9em;
+            background: var(--bg-card);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        th {
+            background: rgba(99,102,241,0.1);
+            color: #a5b4fc;
+            font-weight: 700;
+            text-align: left;
+            padding: 14px 16px;
+            border-bottom: 2px solid var(--border);
+        }
+        td {
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(51,65,85,0.5);
+            color: var(--text-secondary);
+            vertical-align: top;
+        }
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: rgba(99,102,241,0.03); }
+        td strong { color: var(--text-primary); }
+        td.profit { color: var(--accent-success); font-weight: 700; }
+        td.loss { color: var(--accent-danger); font-weight: 700; }
+        td.warning { color: var(--accent-warning); font-weight: 700; }
+        td.recommended { background: rgba(16,185,129,0.05); }
+        .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; margin: 24px 0; }
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 28px;
+            transition: all 0.3s ease;
+        }
+        .card:hover { border-color: var(--accent-primary); transform: translateY(-4px); }
+        .card h4 { font-size: 1.1em; margin-bottom: 12px; color: var(--accent-light); }
+        .card .price { font-size: 1.8em; font-weight: 800; color: var(--accent-success); margin-bottom: 8px; }
+        .card .price span { font-size: 0.5em; font-weight: 400; color: var(--text-muted); }
+        .card p { font-size: 0.85em; color: var(--text-muted); margin: 0; }
+        .summary-box {
+            background: linear-gradient(135deg, rgba(99,102,241,0.1), rgba(139,92,246,0.05));
+            border: 1px solid rgba(99,102,241,0.2);
+            border-radius: var(--radius);
+            padding: 32px;
+            margin: 24px 0;
+        }
+        .summary-box h4 { color: var(--accent-light); margin-bottom: 16px; }
+        .summary-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(51,65,85,0.5); }
+        .summary-row:last-child { border-bottom: none; }
+        .summary-row .label { color: var(--text-secondary); }
+        .summary-row .value { font-weight: 700; color: var(--text-primary); }
+        .summary-row .value.profit { color: var(--accent-success); }
+        .summary-row .value.loss { color: var(--accent-danger); }
+        .summary-row .value.warning { color: var(--accent-warning); }
+        .profit-highlight {
+            background: linear-gradient(135deg, rgba(16,185,129,0.1), rgba(5,150,105,0.05));
+            border: 1px solid rgba(16,185,129,0.3);
+            border-radius: var(--radius);
+            padding: 32px;
+            text-align: center;
+            margin: 32px 0;
+        }
+        .profit-highlight h4 { color: var(--accent-success); font-size: 1.3em; margin-bottom: 16px; }
+        .profit-number { font-size: 3em; font-weight: 900; background: linear-gradient(135deg, #34d399, #10b981); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .profit-detail { color: var(--text-secondary); margin-top: 8px; }
+        .badge-recommended {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--accent-success), #059669);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 50px;
+            font-size: 0.75em;
+            font-weight: 700;
+            margin-left: 8px;
+        }
+        .badge-warning {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--accent-warning), #d97706);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 50px;
+            font-size: 0.75em;
+            font-weight: 700;
+            margin-left: 8px;
+        }
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2em; }
+            .section h2 { font-size: 1.5em; }
+            .card-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="hero">
+    <h1>Enterprise Package Risk Analysis</h1>
+    <p>Strategi Antisipasi Paket "Unlimited" agar Tetap Profitabel</p>
+    <div class="meta-badges">
+        <span class="badge">Worst Case Analysis</span>
+        <span class="badge">Fair Use Policy</span>
+        <span class="badge">Overage Protection</span>
+    </div>
+</div>
+
+<div class="container">
+
+    <!-- SECTION 1: THE PROBLEM -->
+    <div class="section">
+        <h2>1. Masalah: Unlimited = Risiko Kerugian</h2>
+        <p>Jika paket Enterprise benar-benar unlimited, konsumen bisa membuat 200+ artikel per bulan, dan biaya API token akan membengkak tanpa batas.</p>
+
+        <table>
+            <tr>
+                <th>Skenario</th>
+                <th>Artikel/Bulan</th>
+                <th>Biaya API (Smart Routing)</th>
+                <th>Harga Enterprise</th>
+                <th>Profit/Rugi</th>
+                <th>Status</th>
+            </tr>
+            <tr>
+                <td><strong>Ringan</strong></td>
+                <td>30</td>
+                <td>Rp 744.000 - 1.623.000</td>
+                <td>Rp 1.799.000</td>
+                <td class="profit">Rp 176.000 - 1.055.000</td>
+                <td class="profit">✅ Untung</td>
+            </tr>
+            <tr>
+                <td><strong>Normal</strong></td>
+                <td>50</td>
+                <td>Rp 1.240.000 - 2.705.000</td>
+                <td>Rp 1.799.000</td>
+                <td class="warning">-Rp 906.000 - Rp 559.000</td>
+                <td class="warning">⚠️ Impas/Rugi</td>
+            </tr>
+            <tr>
+                <td><strong>Berat</strong></td>
+                <td>100</td>
+                <td>Rp 2.480.000 - 5.410.000</td>
+                <td>Rp 1.799.000</td>
+                <td class="loss">-Rp 681.000 - Rp 3.611.000</td>
+                <td class="loss">❌ Rugi!</td>
+            </tr>
+            <tr>
+                <td><strong>Extreme</strong></td>
+                <td>200</td>
+                <td>Rp 4.960.000 - 10.820.000</td>
+                <td>Rp 1.799.000</td>
+                <td class="loss">-Rp 3.161.000 - Rp 9.021.000</td>
+                <td class="loss">❌❌ Rugi Besar!</td>
+            </tr>
+        </table>
+
+        <div class="summary-box">
+            <h4>⚠️ Kesimpulan Masalah</h4>
+            <div class="summary-row">
+                <span class="label">Break-even Point</span>
+                <span class="value warning">33-72 artikel/bulan</span>
+            </div>
+            <div class="summary-row">
+                <span class="label">Jika konsumen buat >72 artikel</span>
+                <span class="value loss">Anda RUGI</span>
+            </div>
+            <div class="summary-row">
+                <span class="label">Jika konsumen buat 200 artikel</span>
+                <span class="value loss">Rugi Rp 3.161.000 - Rp 9.021.000</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECTION 2: SOLUTIONS -->
+    <div class="section">
+        <h2>2. Solusi: Fair Use Policy + Overage Protection</h2>
+
+        <h3>Opsi A: Fair Use Policy (FUP) — RECOMMENDED</h3>
+        <p>Batasan wajar yang dinyatakan sebagai kebijakan layanan, bukan pembatasan teknis.</p>
+
+        <table>
+            <tr>
+                <th>Paket</th>
+                <th>Harga</th>
+                <th>Batasan Wajar</th>
+                <th>Overage Fee</th>
+                <th>Margin</th>
+            </tr>
+            <tr class="recommended">
+                <td><strong>Enterprise</strong> <span class="badge-recommended">REKOMENDASI</span></td>
+                <td>Rp 1.799.000</td>
+                <td>100 artikel/bulan</td>
+                <td>Rp 5.000/artikel</td>
+                <td>30-50%</td>
+            </tr>
+            <tr>
+                <td><strong>Enterprise Plus</strong></td>
+                <td>Rp 2.799.000</td>
+                <td>200 artikel/bulan</td>
+                <td>Rp 5.000/artikel</td>
+                <td>30-50%</td>
+            </tr>
+            <tr>
+                <td><strong>Enterprise Ultra</strong></td>
+                <td>Rp 4.799.000</td>
+                <td>500 artikel/bulan</td>
+                <td>Rp 5.000/artikel</td>
+                <td>30-50%</td>
+            </tr>
+        </table>
+
+        <h3>Opsi B: Speed Throttling</h3>
+        <p>Untuk penggunaan di atas batasan wajar, antrian diperlambat (bukan ditolak).</p>
+
+        <table>
+            <tr>
+                <th>Penggunaan</th>
+                <th>Kecepatan</th>
+                <th>Catatan</th>
+            </tr>
+            <tr>
+                <td><strong>0-100 artikel</strong></td>
+                <td>Full speed</td>
+                <td>Prioritas tertinggi</td>
+            </tr>
+            <tr>
+                <td><strong>101-150 artikel</strong></td>
+                <td>50% speed</td>
+                <td>Antrian normal</td>
+            </tr>
+            <tr>
+                <td><strong>151-200 artikel</strong></td>
+                <td>25% speed</td>
+                <td>Antrian lambat</td>
+            </tr>
+            <tr>
+                <td><strong>200+ artikel</strong></td>
+                <td>10% speed</td>
+                <td>Sarankan upgrade paket</td>
+            </tr>
+        </table>
+
+        <h3>Opsi C: Hybrid Model (Artikel + Gambar)</h3>
+        <p>Batasan gabungan untuk artikel dan gambar.</p>
+
+        <table>
+            <tr>
+                <th>Paket</th>
+                <th>Harga</th>
+                <th>Artikel</th>
+                <th>Gambar</th>
+                <th>Overage</th>
+            </tr>
+            <tr class="recommended">
+                <td><strong>Enterprise</strong> <span class="badge-recommended">REKOMENDASI</span></td>
+                <td>Rp 1.799.000</td>
+                <td>100/bulan</td>
+                <td>200/bulan</td>
+                <td>Rp 5.000/artikel + Rp 2.000/gambar</td>
+            </tr>
+            <tr>
+                <td><strong>Enterprise Plus</strong></td>
+                <td>Rp 2.799.000</td>
+                <td>200/bulan</td>
+                <td>400/bulan</td>
+                <td>Rp 5.000/artikel + Rp 2.000/gambar</td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- SECTION 3: PROFIT PROJECTION WITH FUP -->
+    <div class="section">
+        <h2>3. Proyeksi Keuntungan dengan Fair Use Policy</h2>
+
+        <table>
+            <tr>
+                <th>Skenario</th>
+                <th>Artikel/Bulan</th>
+                <th>Biaya API</th>
+                <th>Harga</th>
+                <th>Overage</th>
+                <th>Profit/Rugi</th>
+                <th>Margin</th>
+            </tr>
+            <tr>
+                <td><strong>Ringan</strong></td>
+                <td>50</td>
+                <td>Rp 1.240.000</td>
+                <td>Rp 1.799.000</td>
+                <td>Rp 0</td>
+                <td class="profit">Rp 559.000</td>
+                <td class="profit">31%</td>
+            </tr>
+            <tr>
+                <td><strong>Normal</strong></td>
+                <td>100</td>
+                <td>Rp 2.480.000</td>
+                <td>Rp 1.799.000</td>
+                <td>Rp 0</td>
+                <td class="warning">-Rp 681.000</td>
+                <td class="warning">-38%</td>
+            </tr>
+            <tr>
+                <td><strong>Overage 10</strong></td>
+                <td>110</td>
+                <td>Rp 2.728.000</td>
+                <td>Rp 1.799.000</td>
+                <td>Rp 50.000</td>
+                <td class="loss">-Rp 879.000</td>
+                <td class="loss">-49%</td>
+            </tr>
+            <tr>
+                <td><strong>Overage 50</strong></td>
+                <td>150</td>
+                <td>Rp 3.720.000</td>
+                <td>Rp 1.799.000</td>
+                <td>Rp 250.000</td>
+                <td class="loss">-Rp 1.671.000</td>
+                <td class="loss">-93%</td>
+            </tr>
+        </table>
+
+        <div class="profit-highlight">
+            <h4>🎯 Kesimpulan</h4>
+            <p class="profit-detail" style="font-size: 1.1em;">
+                Fair Use Policy <strong>tidak cukup</strong> jika konsumen membuat 100+ artikel.
+                Butuh strategi tambahan.
+            </p>
+        </div>
+    </div>
+
+    <!-- SECTION 4: BEST SOLUTION -->
+    <div class="section">
+        <h2>4. Solusi Terbaik: Enterprise dengan Batasan Wajar + Overage</h2>
+
+        <table>
+            <tr>
+                <th>Paket</th>
+                <th>Harga</th>
+                <th>Batasan Wajar</th>
+                <th>Overage Fee</th>
+                <th>Max Profit</th>
+                <th>Break-even</th>
+            </tr>
+            <tr class="recommended">
+                <td><strong>Enterprise</strong> <span class="badge-recommended">REKOMENDASI</span></td>
+                <td>Rp 2.499.000</td>
+                <td>80 artikel/bulan</td>
+                <td>Rp 8.000/artikel</td>
+                <td>Rp 1.799.000</td>
+                <td>80 artikel</td>
+            </tr>
+            <tr>
+                <td><strong>Enterprise Plus</strong></td>
+                <td>Rp 3.999.000</td>
+                <td>150 artikel/bulan</td>
+                <td>Rp 8.000/artikel</td>
+                <td>Rp 3.199.000</td>
+                <td>150 artikel</td>
+            </tr>
+            <tr>
+                <td><strong>Enterprise Ultra</strong></td>
+                <td>Rp 6.999.000</td>
+                <td>400 artikel/bulan</td>
+                <td>Rp 8.000/artikel</td>
+                <td>Rp 6.199.000</td>
+                <td>400 artikel</td>
+            </tr>
+        </table>
+
+        <div class="summary-box">
+            <h4>📊 Margin per Paket (dengan Batasan Wajar)</h4>
+            <div class="summary-row">
+                <span class="label">Enterprise (Rp 2.499.000, 80 artikel)</span>
+                <span class="value profit">Margin 30-50%</span>
+            </div>
+            <div class="summary-row">
+                <span class="label">Enterprise Plus (Rp 3.999.000, 150 artikel)</span>
+                <span class="value profit">Margin 30-50%</span>
+            </div>
+            <div class="summary-row">
+                <span class="label">Enterprise Ultra (Rp 6.999.000, 400 artikel)</span>
+                <span class="value profit">Margin 30-50%</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECTION 5: IMPLEMENTATION -->
+    <div class="section">
+        <h2>5. Implementasi Teknis</h2>
+
+        <div class="card-grid">
+            <div class="card">
+                <h4>1. Tracking System</h4>
+                <div class="price">Monitor</div>
+                <p>Track jumlah artikel per pelanggan secara real-time</p>
+            </div>
+            <div class="card">
+                <h4>2. Automated Alert</h4>
+                <div class="price">Notifikasi</div>
+                <p>Kirim alert saat mencapai 80% batas wajar</p>
+            </div>
+            <div class="card">
+                <h4>3. Overage Invoice</h4>
+                <div class="price">Auto-billing</div>
+                <p>Tagih otomatis untuk penggunaan di atas batas</p>
+            </div>
+            <div class="card">
+                <h4>4. Speed Throttling</h4>
+                <div class="price">Queue</div>
+                <p>Perlambat antrian untuk penggunaan berlebihan</p>
+            </div>
+            <div class="card">
+                <h4>5. Upgrade Prompt</h4>
+                <div class="price">Suggest</div>
+                <p>Sarankan upgrade paket saat mendekati batas</p>
+            </div>
+            <div class="card">
+                <h4>6. Fair Use Policy</h4>
+                <div class="price">Legal</div>
+                <p>Tulis di ToS: "Batasan wajar untuk kualitas layanan"</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECTION 6: FINAL RECOMMENDATION -->
+    <div class="section">
+        <h2>6. Rekomendasi Final</h2>
+
+        <div class="card-grid">
+            <div class="card">
+                <h4>🖥️ Enterprise</h4>
+                <div class="price">Rp 2.499.000 <span>/bln</span></div>
+                <p>80 artikel/bulan + Rp 8.000/artikel ooverage</p>
+            </div>
+            <div class="card">
+                <h4>🚀 Enterprise Plus</h4>
+                <div class="price">Rp 3.999.000 <span>/bln</span></div>
+                <p>150 artikel/bulan + Rp 8.000/artikel ooverage</p>
+            </div>
+            <div class="card">
+                <h4>💎 Enterprise Ultra</h4>
+                <div class="price">Rp 6.999.000 <span>/bln</span></div>
+                <p>400 artikel/bultan + Rp 8.000/artikel ooverage</p>
+            </div>
+        </div>
+
+        <div class="profit-highlight">
+            <h4>✅ Kesimpulan</h4>
+            <p class="profit-detail" style="font-size: 1.1em;">
+                <strong>Jangan pernah tawarkan unlimited tanpa batasan!</strong>
+                Gunakan <strong>Fair Use Policy</strong> + <strong>Overage Fee</strong> + <strong>Speed Throttling</strong>.
+                Dengan harga <strong>Rp 2.499.000+</strong> dan batasan <strong>80 artikel/bulan</strong>,
+                Anda tetap profitable bahkan jika konsumen memaksimalkan penggunaan.
+            </p>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <div style="text-align: center; padding: 40px; color: var(--text-muted); font-size: 0.85em; border-top: 1px solid var(--border); margin-top: 60px;">
+        <p><strong>AI Content Team</strong> — Enterprise Package Risk Analysis</p>
+        <p>© 2026 | Fair Use Policy + Overage Protection</p>
+    </div>
+
+</div>
+
+</body>
+</html>
