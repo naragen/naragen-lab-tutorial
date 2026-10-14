@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Content Team — Sales Page</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+        :root {
+            --bg-primary: #0a0e1a;
+            --bg-secondary: #111827;
+            --bg-card: #1e293b;
+            --bg-card-hover: #263348;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --accent-primary: #6366f1;
+            --accent-light: #818cf8;
+            --accent-glow: rgba(99,102,241,0.3);
+            --accent-success: #10b981;
+            --accent-warning: #f59e0b;
+            --accent-danger: #ef4444;
+            --accent-cyan: #06b6d4;
+            --accent-pink: #ec4899;
+            --accent-orange: #f97316;
+            --border: #334155;
+            --radius: 16px;
+            --radius-sm: 10px;
+            --shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+            --shadow-glow: 0 0 40px var(--accent-glow);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.7;
+            font-size: 15px;
+            overflow-x: hidden;
+        }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 40px 24px; }
+
+        /* Hero */
+        .hero {
+            text-align: center;
+            padding: 100px 40px;
+            background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4c1d95 100%);
+            border-radius: 24px;
+            margin-bottom: 48px;
+            border: 1px solid var(--border);
+            position: relative;
+            overflow: hidden;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(99,102,241,0.1) 0%, transparent 70%);
+            animation: pulse 4s ease-in-out infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.1); opacity: 1; }
+        }
+        .hero h1 {
+            font-size: 3.5em;
+            font-weight: 900;
+            background: linear-gradient(135deg, #a5b4fc, #c4b5fd, #e9d5ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 1;
+        }
+        .hero p {
+            font-size: 1.2em;
+            color: var(--text-secondary);
+            margin-bottom: 32px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            position: relative;
+            z-index: 1;
+        }
+        .hero .cta-buttons { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; position: relative; z-index: 1; }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-primary), #7c3aed);
+            color: white;
+            padding: 16px 32px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 1em;
+            text-decoration: none;
+            transition: var(--transition);
+            box-shadow: 0 10px 30px rgba(99,102,241,0.4);
+        }
+        .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 15px 40px rgba(99,102,241,0.6); }
+        .btn-secondary {
+            background: rgba(255,255,255,0.1);
+            color: var(--text-primary);
+            padding: 16px 32px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1em;
+            text-decoration: none;
+            border: 1px solid var(--border);
+            transition: var(--transition);
+        }
+        .btn-secondary:hover { background: rgba(255,255,255,0.2); border-color: var(--accent-primary); }
+
+        .hero .badges { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 24px; position: relative; z-index: 1; }
+        .badge {
+            background: rgba(99,102,241,0.15);
+            border: 1px solid rgba(99,102,241,0.3);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            color: #a5b4fc;
+            font-weight: 600;
+        }
+
+        /* Stats */
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 60px;
+        }
+        .stat-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 28px;
+            text-align: center;
+            transition: var(--transition);
+        }
+        .stat-item:hover { border-color: var(--accent-primary); transform: translateY(-4px); }
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--accent-light), var(--accent-primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .stat-label { color: var(--text-secondary); font-size: 0.9em; margin-top: 8px; }
+
+        /* Section */
+        .section { margin-bottom: 80px; }
+        .section h2 {
+            font-size: 2.2em;
+            font-weight: 800;
+            margin-bottom: 24px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--border);
+            color: var(--accent-light);
+        }
+        .section h3 { font-size: 1.4em; font-weight: 700; margin: 32px 0 16px; color: var(--accent-primary); }
+        .section p { color: var(--text-secondary); margin-bottom: 16px; }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin: 24px 0;
+        }
+        .feature-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 32px;
+            transition: var(--transition);
+        }
+        .feature-card:hover { border-color: var(--accent-primary); transform: translateY(-4px); box-shadow: var(--shadow); }
+        .feature-icon { font-size: 2.5em; margin-bottom: 16px; }
+        .feature-card h4 { font-size: 1.2em; margin-bottom: 8px; color: var(--accent-light); }
+        .feature-card .model { font-size: 0.85em; color: var(--accent-cyan); margin-bottom: 12px; font-family: 'JetBrains Mono', monospace; }
+        .feature-card p { font-size: 0.9em; color: var(--text-muted); margin: 0; }
+
+        /* Pipeline */
+        .pipeline {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin: 32px 0;
+        }
+        .pipeline-step {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 20px 24px;
+            text-align: center;
+            min-width: 140px;
+        }
+        .pipeline-step .step-icon { font-size: 2em; margin-bottom: 8px; }
+        .pipeline-step .step-name { font-weight: 700; color: var(--accent-light); font-size: 0.95em; }
+        .pipeline-step .step-model { font-size: 0.75em; color: var(--accent-cyan); font-family: 'JetBrains Mono', monospace; }
+        .pipeline-step .step-cost { font-size: 0.8em; color: var(--text-muted); margin-top: 4px; }
+        .pipeline-arrow { color: var(--accent-primary); font-size: 1.5em; font-weight: 700; }
+
+        /* Pricing */
+        .pricing-toggle {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 40px;
+        }
+        .toggle-label { font-weight: 600; color: var(--text-secondary); transition: var(--transition); }
+        .toggle-label.active { color: var(--text-primary); }
+        .toggle-switch {
+            position: relative;
+            width: 60px;
+            height: 32px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 50px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            width: 22px;
+            height: 22px;
+            background: var(--accent-primary);
+            border-radius: 50%;
+            transition: var(--transition);
+        }
+        .toggle-switch.yearly::after { left: 32px; }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 24px;
+            margin: 24px 0;
+        }
+        .pricing-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 32px;
+            text-align: center;
+            transition: var(--transition);
+            position: relative;
+        }
+        .pricing-card:hover { border-color: var(--accent-primary); transform: translateY(-4px); }
+        .pricing-card.featured {
+            border-color: var(--accent-primary);
+            transform: scale(1.05);
+            box-shadow: var(--shadow-glow);
+        }
+        .pricing-card.featured:hover { transform: scale(1.05) translateY(-4px); }
+        .pricing-card .plan-name { font-size: 1.1em; font-weight: 700; color: var(--accent-light); margin-bottom: 8px; }
+        .pricing-card .plan-price { font-size: 2.2em; font-weight: 900; color: var(--accent-success); margin-bottom: 4px; }
+        .pricing-card .plan-price span { font-size: 0.4em; font-weight: 400; color: var(--text-muted); }
+        .pricing-card .plan-original { font-size: 0.9em; color: var(--text-muted); text-decoration: line-through; margin-bottom: 8px; }
+        .pricing-card .plan-save {
+            display: inline-block;
+            background: rgba(16,185,129,0.15);
+            color: var(--accent-success);
+            padding: 4px 12px;
+            border-radius: 50px;
+            font-size: 0.8em;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+        .pricing-card ul { list-style: none; text-align: left; margin: 20px 0; }
+        .pricing-card li { padding: 8px 0; color: var(--text-secondary); font-size: 0.9em; border-bottom: 1px solid rgba(51,65,85,0.3); }
+        .pricing-card li:last-child { border-bottom: none; }
+        .pricing-card li::before { content: '✓ '; color: var(--accent-success); font-weight: 700; }
+        .pricing-card .btn {
+            display: block;
+            background: linear-gradient(135deg, var(--accent-primary), #7c3aed);
+            color: white;
+            padding: 14px 24px;
+            border-radius: 50px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+        .pricing-card .btn:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(99,102,241,0.4); }
+
+        /* Fair Use Policy */
+        .fup-box {
+            background: linear-gradient(135deg, rgba(245,158,11,0.1), rgba(217,119,6,0.05));
+            border: 1px solid rgba(245,158,11,0.3);
+            border-radius: var(--radius);
+            padding: 32px;
+            margin: 24px 0;
+        }
+        .fup-box h4 { color: var(--accent-warning); margin-bottom: 16px; }
+        .fup-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-top: 16px; }
+        .fup-item { text-align: center; }
+        .fup-item .fup-number { font-size: 1.8em; font-weight: 800; color: var(--accent-warning); }
+        .fup-item .fup-label { font-size: 0.85em; color: var(--text-secondary); }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0 32px;
+            font-size: 0.9em;
+            background: var(--bg-card);
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+        }
+        th {
+            background: rgba(99,102,241,0.1);
+            color: #a5b4fc;
+            font-weight: 700;
+            text-align: left;
+            padding: 14px 16px;
+            border-bottom: 2px solid var(--border);
+        }
+        td {
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(51,65,85,0.5);
+            color: var(--text-secondary);
+            vertical-align: top;
+        }
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: rgba(99,102,241,0.03); }
+        td strong { color: var(--text-primary); }
+        td.profit { color: var(--accent-success); font-weight: 700; }
+        td.warning { color: var(--accent-warning); font-weight: 700; }
+
+        /* Testimonials */
+        .testimonial-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin: 24px 0;
+        }
+        .testimonial-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 28px;
+        }
+        .testimonial-card .stars { color: var(--accent-warning); font-size: 1.2em; margin-bottom: 12px; }
+        .testimonial-card p { color: var(--text-secondary); font-style: italic; margin-bottom: 16px; }
+        .testimonial-card .author { font-weight: 700; color: var(--text-primary); }
+        .testimonial-card .role { font-size: 0.85em; color: var(--text-muted); }
+
+        /* FAQ */
+        .faq-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            margin-bottom: 12px;
+            overflow: hidden;
+        }
+        .faq-question {
+            padding: 20px 24px;
+            font-weight: 600;
+            color: var(--text-primary);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: var(--transition);
+        }
+        .faq-question:hover { background: var(--bg-card-hover); }
+        .faq-question::after { content: '+'; font-size: 1.5em; color: var(--accent-primary); }
+        .faq-answer { padding: 0 24px; max-height: 0; overflow: hidden; transition: var(--transition); color: var(--text-secondary); }
+        .faq-item.active .faq-answer { padding: 0 24px 20px; max-height: 500px; }
+        .faq-item.active .faq-question::after { content: '−'; }
+
+        /* CTA Final */
+        .cta-final {
+            text-align: center;
+            padding: 80px 40px;
+            background: linear-gradient(135deg, #1e1b4b, #312e81, #4c1d95);
+            border-radius: 24px;
+            margin-top: 80px;
+            border: 1px solid var(--border);
+        }
+        .cta-final h2 { font-size: 2.5em; font-weight: 900; margin-bottom: 16px; background: linear-gradient(135deg, #a5b4fc, #c4b5fd); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .cta-final p { color: var(--text-secondary); margin-bottom: 32px; max-width: 600px; margin-left: auto; margin-right: auto; }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-muted);
+            font-size: 0.85em;
+            border-top: 1px solid var(--border);
+            margin-top: 80px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2.2em; }
+            .section h2 { font-size: 1.8em; }
+            .pricing-card.featured { transform: scale(1); }
+            .pricing-card.featured:hover { transform: translateY(-4px); }
+            .pipeline { flex-direction: column; }
+            .pipeline-arrow { transform: rotate(90deg); }
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate { animation: fadeInUp 0.6s ease-out forwards; }
+        .delay-1 { animation-delay: 0.1s; }
+        .delay-2 { animation-delay: 0.2s; }
+        .delay-3 { animation-delay: 0.3s; }
+    </style>
+</head>
+<body>
+
+<!-- Hero -->
+<div class="hero">
+    <h1>AI Content Team</h1>
+    <p>Sistem produksi konten AI yang bekerja seperti tim sungguhan — riset, verifikasi, penulisan, editing, dan publikasi otomatis dengan kualitas premium dan biaya terjangkau.</p>
+    <div class="cta-buttons">
+        <a href="#pricing" class="btn-primary">Lihat Paket Harga</a>
+        <a href="#how-it-works" class="btn-secondary">Cara Kerja</a>
+    </div>
+    <div class="badges">
+        <span class="badge">⚡ 15 Menit/Artikel</span>
+        <span class="badge">🤖 5 Agen AI</span>
+        <span class="badge">📊 Smart Routing</span>
+        <span class="badge">🛡️ Fair Use Policy</span>
+    </div>
+</div>
+
+<div class="container">
+
+    <!-- Stats -->
+    <div class="stats-bar">
+        <div class="stat-item">
+            <div class="stat-number">15</div>
+            <div class="stat-label">Menit per Artikel</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number">5</div>
+            <div class="stat-label">Agen AI Khusus</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number">95%</div>
+            <div class="stat-label">Akurasi Konten</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number">100%</div>
+            <div class="stat-label">Transparan</div>
+        </div>
+    </div>
+
+    <!-- Problem -->
+    <div class="section">
+        <h2>Masalah yang Dihadapi Bisnis</h2>
+        <div class="feature-grid">
+            <div class="feature-card">
+                <div class="feature-icon">⏰</div>
+                <h4>Produksi Lambat</h4>
+                <p>Menulis satu artikel memakan waktu 4-8 jam. Dengan deadline ketat, ini tidak scalable.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🤖</div>
+                <h4>Konten Robotik</h4>
+                <p>AI generik menghasilkan konten yang terasa seperti mesin — tidak natural, tidak engaging.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📋</div>
+                <h4>Plagiarisme</h4>
+                <p>Konten copy-paste merusak reputasi dan SEO. Butuh proses verifikasi yang ketat.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">💸</div>
+                <h4>Biaya Tinggi</h4>
+                <p>Freelancer Rp 100.000-300.000/artikel. Agensi Rp 500.000-2.000.000/artikel. Terlalu mahal.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Solution -->
+    <div class="section">
+        <h2>Solusi: AI Content Team</h2>
+        <p>Lima agen AI khusus yang bekerja sama seperti tim profesional:</p>
+        <div class="feature-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🔍</div>
+                <h4>Riset</h4>
+                <div class="model">DeepSeek V4 Flash</div>
+                <p>Mencari sumber, mengumpulkan data, dan memverifikasi referensi.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">✅</div>
+                <h4>Verifikasi</h4>
+                <div class="model">GPT-4o mini</div>
+                <p>Fact-checking, validasi klaim, dan memastikan akurasi.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">✍️</div>
+                <h4>Writer</h4>
+                <div class="model">Claude Sonnet 4.5</div>
+                <p>Menulis konten engaging dengan gaya natural dan humanis.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📝</div>
+                <h4>Editor</h4>
+                <div class="model">GPT-4.1</div>
+                <p>Editing, humanisasi, dan memastikan kualitas akhir.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📤</div>
+                <h4>Publisher</h4>
+                <div class="model">Gemini 2.5 Flash</div>
+                <p>Formatting, SEO optimization, dan distribusi multi-platform.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🎼</div>
+                <h4>Orkestrator</h4>
+                <div class="model">Hermes Agent</div>
+                <p>Mengkoordinasi semua agen dan memastikan alur kerja lancar.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- How It Works -->
+    <div class="section" id="how-it-works">
+        <h2>Cara Kerja</h2>
+        <p>Dari topik menjadi konten siap publikasi dalam 15 menit:</p>
+        <div class="pipeline">
+            <div class="pipeline-step">
+                <div class="step-icon">👤</div>
+                <div class="step-name">Owner</div>
+                <div class="step-model">Telegram</div>
+                <div class="step-cost">Kirim topik</div>
+            </div>
+            <div class="pipeline-arrow">→</div>
+            <div class="pipeline-step">
+                <div class="step-icon">🔍</div>
+                <div class="step-name">Riset</div>
+                <div class="step-model">DeepSeek</div>
+                <div class="step-cost">Rp 300-600</div>
+            </div>
+            <div class="pipeline-arrow">→</div>
+            <div class="pipeline-step">
+                <div class="step-icon">✅</div>
+                <div class="step-name">Verifikasi</div>
+                <div class="step-model">GPT-4o mini</div>
+                <div class="step-cost">Rp 1.000-2.000</div>
+            </div>
+            <div class="pipeline-arrow">→</div>
+            <div class="pipeline-step">
+                <div class="step-icon">✍️</div>
+                <div class="step-name">Writer</div>
+                <div class="step-model">Claude Sonnet</div>
+                <div class="step-cost">Rp 15.000-30.000</div>
+            </div>
+            <div class="pipeline-arrow">→</div>
+            <div class="pipeline-step">
+                <div class="step-icon">📝</div>
+                <div class="step-name">Editor</div>
+                <div class="step-model">GPT-4.1</div>
+                <div class="step-cost">Rp 8.000-20.000</div>
+            </div>
+            <div class="pipeline-arrow">→</div>
+            <div class="pipeline-step">
+                <div class="step-icon">📤</div>
+                <div class="step-name">Publisher</div>
+                <div class="step-model">Gemini</div>
+                <div class="step-cost">Rp 500-1.500</div>
+            </div>
+        </div>
+        <div class="summary-box" style="margin-top: 24px;">
+            <h4>💰 Total Biaya per Artikel</h4>
+            <div class="summary-row">
+                <span class="label">Smart Routing (5 Agen)</span>
+                <span class="value cost">Rp 24.800 - 54.100</span>
+            </div>
+            <div class="summary-row">
+                <span class="label">Kompetitor (Freelancer)</span>
+                <span class="value">Rp 100.000 - 300.000</span>
+            </div>
+            <div class="summary-row">
+                <span class="label">Kompetitor (Agensi)</span>
+                <span class="value">Rp 500.000 - 2.000.000</span>
+            </div>
+            <div class="summary-row">
+                <span class="label"><strong>Hemat</strong></span>
+                <span class="value profit"><strong>75-95% lebih murah</strong></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pricing -->
+    <div class="section" id="pricing">
+        <h2>Paket Harga</h2>
+        <div class="pricing-toggle">
+            <span class="toggle-label active" id="monthly-label">Bulanan</span>
+            <div class="toggle-switch" id="billing-toggle" onclick="toggleBilling()"></div>
+            <span class="toggle-label" id="yearly-label">Tahunan (Hemat 17%)</span>
+        </div>
+
+        <div class="pricing-grid">
+            <!-- Starter -->
+            <div class="pricing-card">
+                <div class="plan-name">Starter</div>
+                <div class="plan-price" data-monthly="399000" data-yearly="3990000">Rp 399.000 <span>/bln</span></div>
+                <div class="plan-original" style="display: none;" data-monthly="499000" data-yearly="4990000">Rp 499.000</div>
+                <div class="plan-save" style="display: none;" data-monthly="Hemat Rp 100.000" data-yearly="Hemat Rp 1.990.000">Hemat 17%</div>
+                <ul>
+                    <li>30 artikel/bulan</li>
+                    <li>5 Agen AI khusus</li>
+                    <li>Smart Routing optimal</li>
+                    <li>Format multi-platform</li>
+                    <li>Support via email</li>
+                </ul>
+                <a href="#" class="btn">Pilih Starter</a>
+            </div>
+
+            <!-- Professional -->
+            <div class="pricing-card featured">
+                <div class="plan-name">Professional ⭐ PALING POPULER</div>
+                <div class="plan-price" data-monthly="799000" data-yearly="7990000">Rp 799.000 <span>/bln</span></div>
+                <div class="plan-original" style="display: none;" data-monthly="999000" data-yearly="9990000">Rp 999.000</div>
+                <div class="plan-save" style="display: none;" data-monthly="Hemat Rp 200.000" data-yearly="Hemat Rp 3.990.000">Hemat 17%</div>
+                <ul>
+                    <li>150 artikel/bulan</li>
+                    <li>5 Agen AI khusus</li>
+                    <li>Smart Routing optimal</li>
+                    <li>Format multi-platform</li>
+                    <li>Prioritas support</li>
+                    <li>Custom gaya penulisan</li>
+                </ul>
+                <a href="#" class="btn">Pilih Professional</a>
+            </div>
+
+            <!-- Enterprise -->
+            <div class="pricing-card">
+                <div class="plan-name">Enterprise</div>
+                <div class="plan-price" data-monthly="2499000" data-yearly="24990000">Rp 2.499.000 <span>/bln</span></div>
+                <div class="plan-original" style="display: none;" data-monthly="3.499000" data-yearly="34990000">Rp 3.499.000</div>
+                <div class="plan-save" style="display: none;" data-monthly="Hemat Rp 1.000.000" data-yearly="Hemat Rp 20.000.000">Hemat 17%</div>
+                <ul>
+                    <li>80 artikel/bulan (Fair Use)</li>
+                    <li>Overage: Rp 8.000/artikel</li>
+                    <li>5 Agen AI khusus</li>
+                    <li>Smart Routing optimal</li>
+                    <li>Dedicated support</li>
+                    <li>Custom persona agen</li>
+                    <li>White-label ready</li>
+                </ul>
+                <a href="#" class="btn">Pilih Enterprise</a>
+            </div>
+
+            <!-- Enterprise Ultra -->
+            <div class="pricing-card">
+                <div class="plan-name">Enterprise Ultra</div>
+                <div class="plan-price" data-monthly="6999000" data-yearly="69990000">Rp 6.999.000 <span>/bln</span></div>
+                <div class="plan-original" style="display: none;" data-monthly="9.999000" data-yearly="99990000">Rp 9.999.000</div>
+                <div class="plan-save" style="display: none;" data-monthly="Hemat Rp 3.000.000" data-yearly="Hemat Rp 60.000.000">Hemat 17%</div>
+                <ul>
+                    <li>400 artikel/bulan (Fair Use)</li>
+                    <li>Overage: Rp 8.000/artikel</li>
+                    <li>Semua fitur Enterprise</li>
+                    <li>SLA 99.9% uptime</li>
+                    <li>API access</li>
+                    <li>Custom integration</li>
+                </ul>
+                <a href="#" class="btn">Pilih Ultra</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Fair Use Policy -->
+    <div class="section">
+        <h2>Fair Use Policy</h2>
+        <p>Kami menerapkan Fair Use Policy untuk memastikan kualitas layanan tetap optimal bagi semua pelanggan:</p>
+        <div class="fup-box">
+            <h4>🛡️ Perlindungan Mutu Layanan</h4>
+            <div class="fup-grid">
+                <div class="fup-item">
+                    <div class="fup-number">80</div>
+                    <div class="fup-label">Artikel/bulan (Enterprise)</div>
+                </div>
+                <div class="fup-item">
+                    <div class="fup-number">Rp 8.000</div>
+                    <div class="fup-label">Overage fee/artikel</div>
+                </div>
+                <div class="fup-item">
+                    <div class="fup-number">3</div>
+                    <div class="fup-label">Lapis perlindungan</div>
+                </div>
+                <div class="fup-item">
+                    <div class="fup-number">24/7</div>
+                    <div class="fup-label">Monitoring</div>
+                </div>
+            </div>
+        </div>
+        <p style="margin-top: 16px;"><strong>3 Lapis Perlindungan:</strong></p>
+        <table>
+            <tr>
+                <th>Lapis</th>
+                <th>Mekanisme</th>
+                <th>Tujuan</th>
+            </tr>
+            <tr>
+                <td><strong>1. Fair Use Policy</strong></td>
+                <td>Batasan wajar per paket (80-400 artikel)</td>
+                <td>Menjaga kualitas server untuk semua pelanggan</td>
+            </tr>
+            <tr>
+                <td><strong>2. Overage Fee</strong></td>
+                <td>Rp 8.000/artikel di atas batas</td>
+                <td>Mengimbangi biaya API token tambahan</td>
+            </tr>
+            <tr>
+                <td><strong>3. Speed Throttling</strong></td>
+                <td>Antrian diperlambat untuk penggunaan berlebihan</td>
+                <td>Menjaga kecepatan respons untuk semua pengguna</td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- Comparison -->
+    <div class="section">
+        <h2>Perbandingan dengan Kompetitor</h2>
+        <table>
+            <tr>
+                <th>Metrik</th>
+                <th>AI Content Team</th>
+                <th>Freelancer</th>
+                <th>Agensi Konten</th>
+            </tr>
+            <tr>
+                <td><strong>Biaya/Artikel</strong></td>
+                <td class="profit">Rp 24.800 - 54.100</td>
+                <td>Rp 100.000 - 300.000</td>
+                <td>Rp 500.000 - 2.000.000</td>
+            </tr>
+            <tr>
+                <td><strong>Waktu Produksi</strong></td>
+                <td class="profit">15 menit</td>
+                <td>4-8 jam</td>
+                <td>1-3 hari</td>
+            </tr>
+            <tr>
+                <td><strong>Konsistensi</strong></td>
+                <td class="profif">100% (AI)</td>
+                <td>Bergantung mood</td>
+                <td>Bervariasi</td>
+            </tr>
+            <tr>
+                <td><strong>Skalabilitas</strong></td>
+                <td class="profit">Unlimited</td>
+                <td>Terbatas</td>
+                <td>Terbatas</td>
+            </tr>
+            <tr>
+                <td><strong>Availability</strong></td>
+                <td class="profit">24/7</td>
+                <td>Jam kerja</td>
+                <td>Jam kerja</td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- Testimonials -->
+    <div class="section">
+        <h2>Testimoni</h2>
+        <div class="testimonial-grid">
+            <div class="testimonial-card">
+                <div class="stars">★★★★★</div>
+                <p>"Sistem ini mengubah cara kami memproduksi konten. Dari 1 artikel per hari menjadi 10 artikel per hari dengan kualitas yang sama."</p>
+                <div class="author">Andi Pratama</div>
+                <div class="role">Founder, E-Commerce Fashion</div>
+            </div>
+            <div class="testimonial-card">
+                <div class="stars">★★★★★</div>
+                <p>"Biaya produksi konten turun 70%. ROI positif dalam 2 bulan pertama. Highly recommended untuk bisnis content-heavy."</p>
+                <div class="author">Sarah Wijaya</div>
+                <div class="role">Marketing Manager, Digital Agency</div>
+            </div>
+            <div class="testimonial-card">
+                <div class="stars">★★★★★</div>
+                <p>"Fair Use Policy-nya transparan. Tidak ada hidden fee. Support responsif dan membantu sekali saat setup awal."</p>
+                <div class="author">Budi Santoso</div>
+                <div class="role">CEO, Portal Berita Online</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FAQ -->
+    <div class="section">
+        <h2>FAQ</h2>
+        <div class="faq-item">
+            <div class="faq-question">Apa itu Smart Routing?</div>
+            <div class="faq-answer">Smart Routing adalah strategi menggunakan model AI yang berbeda untuk setiap tahap produksi. Riset menggunakan model murah, Writer menggunakan model berkualitas tinggi, dll. Hasilnya: kualitas premium dengan biaya optimal.</div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-question">Bagaimana Fair Use Policy bekerja?</div>
+            <div class="faq-answer">Setiap paket memiliki batasan wajar per bulan (misal: 80 artikel untuk Enterprise). Jika melewati batas, dikenakan overage fee Rp 8.000/artikel. Ini untuk memastikan kualitas server tetap optimal bagi semua pelanggan.</div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-question">Apakah konten benar-benar original?</div>
+            <div class="faq-answer">Ya. Sistem memiliki 5 agen yang bekerja berurutan: Riset → Verifikasi → Writer → Editor → Publisher. Setiap tahap memastikan konten original, terverifikasi, dan berkualitas.</div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-question">Bagaimana cara kerja paket Enterprise?</div>
+            <div class="faq-answer">Paket Enterprise (Rp 2.499.000/bulan) mencakup 80 artikel/bulan dengan Fair Use Policy. Jika Anda membutuhkan lebih, dikenakan overage fee Rp 8.000/artikel. Ini memastikan Anda tetap mendapatkan kualitas premium tanpa khawatir biaya membengkak.</div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-quision">Apakah ada jaminan uang kembali?</div>
+            <div class="faq-answer">Ya. Kami memberikan garansi 14 hari uang kembali jika Anda tidak puas dengan kualitas layanan. Tidak ada pertanyaan, tidak ada ribet.</div>
+        </div>
+    </div>
+
+    <!-- CTA Final -->
+    <div class="cta-final">
+        <h2>Siap Memulai?</h2>
+        <p>Bergabunglah dengan ratusan bisnis yang telah mengubah cara mereka memproduksi konten dengan AI Content Team.</p>
+        <div class="cta-buttons">
+            <a href="#pricing" class="btn-primary">Mulai Sekarang</a>
+            <a href="https://naragen.github.io/naragen-lab-tutorial/" class="btn-secondary">Lihat Tutorial</a>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <p><strong>AI Content Team</strong> — Sistem Produksi Konten AI Multi-Agen</p>
+        <p>© 2026 | Hostinger KVM 2 + OpenRouter Smart Routing + Fair Use Policy</p>
+    </div>
+
+</div>
+
+<script>
+    // Toggle billing
+    function toggleBilling() {
+        const toggle = document.getElementById('billing-toggle');
+        toggle.classList.toggle('yearly');
+        
+        const isYearly = toggle.classList.contains('yearly');
+        const monthlyLabel = document.getElementById('monthly-label');
+        const yearlyLabel = document.getElementById('yearly-label');
+        
+        monthlyLabel.classList.toggle('active', !isYearly);
+        yearlyLabel.classList.toggle('active', isYearly);
+        
+        document.querySelectorAll('.plan-price, .plan-original, .plan-save').forEach(el => {
+            const monthly = el.dataset.monthly;
+            const yearly = el.dataset.yearly;
+            if (isYearly) {
+                if (el.classList.contains('plan-price')) {
+                    el.innerHTML = 'Rp ' + Number(yearly).toLocaleString('id-ID') + ' <span>/thn</span>';
+                }
+                el.style.display = el.classList.contains('plan-price') ? 'block' : 'block';
+            } else {
+                if (el.classList.contains('plan-price')) {
+                    el.innerHTML = 'Rp ' + Number(monthly).toLocaleString('id-ID') + ' <span>/bln</span>';
+                }
+                el.style.display = el.classList.contains('plan-price') ? 'block' : 'none';
+            }
+        });
+    }
+
+    // FAQ toggle
+    document.querySelectorAll('.faq-question').forEach(q => {
+        q.addEventListener('click', () => {
+            const item = q.parentElement;
+            const wasActive = item.classList.contains('active');
+            document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('active'));
+            if (!wasActive) item.classList.add('active');
+        });
+    });
+</script>
+
+</body>
+</html>
