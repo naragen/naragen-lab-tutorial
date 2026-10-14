@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profit Calculation — AI Content Team</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+        :root {
+            --bg-primary: #0a0e1a;
+            --bg-secondary: #111827;
+            --bg-card: #1e293b;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --accent-primary: #6366f1;
+            --accent-light: #818cf8;
+            --accent-success: #10b981;
+            --accent-warning: #f59e0b;
+            --accent-danger: #ef4444;
+            --accent-cyan: #06b6d4;
+            --border: #334155;
+            --radius: 16px;
+            --radius-sm: 10px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.7;
+            font-size: 15px;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 40px 24px; }
+
+        .hero {
+            text-align: center;
+            padding: 80px 40px;
+            background: linear-gradient(135deg, #1e1b4b, #312e81, #4c1d95);
+            border-radius: 20px;
+            margin-bottom: 48px;
+            border: 1px solid var(--border);
+        }
+        .hero h1 {
+            font-size: 3em;
+            font-weight: 800;
+            background: linear-gradient(135deg, #a5b4fc, #c4b5fd);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 16px;
+        }
+        .hero p { font-size: 1.1em; color: var(--text-secondary); margin-bottom: 24px; }
+        .hero .meta-badges { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+        .badge {
+            background: rgba(99,102,241,0.15);
+            border: 1px solid rgba(99,102,241,0.3);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            color: #a5b4fc;
+            font-weight: 600;
+        }
+
+        .section { margin-bottom: 60px; }
+        .section h2 {
+            font-size: 2em;
+            font-weight: 800;
+            margin-bottom: 24px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--border);
+            color: var(--accent-light);
+        }
+        .section h3 { font-size: 1.3em; font-weight: 700; margin: 32px 0 16px; color: var(--accent-primary); }
+        .section p { color: var(--text-secondary); margin-bottom: 16px; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0 32px;
+            font-size: 0.9em;
+            background: var(--bg-card);
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+        }
+        th {
+            background: rgba(99,102,241,0.1);
+            color: #a5b4fc;
+            font-weight: 700;
+            text-align: left;
+            padding: 14px 16px;
+            border-bottom: 2px solid var(--border);
+        }
+        td {
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(51,65,85,0.5);
+            color: var(--text-secondary);
+            vertical-align: top;
+        }
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: rgba(99,102,241,0.03); }
+        td strong { color: var(--text-primary); }
+        td.profit { color: var(--accent-success); font-weight: 700; }
+        td.loss { color: var(--accent-danger); font-weight: 700; }
+        td.warning { color: var(--accent-warning); font-weight: 700; }
+        td.number { font-family: 'JetBrains Mono', monospace; text-align: right; }
+        td.recommended { background: rgba(16,185,129,0.05); }
+
+        .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; margin: 24px 0; }
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 28px;
+            transition: all 0.3s ease;
+        }
+        .card:hover { border-color: var(--accent-primary); transform: translateY(-4px); }
+        .card h4 { font-size: 1.1em; margin-bottom: 12px; color: var(--accent-light); }
+        .card .price { font-size: 1.8em; font-weight: 800; color: var(--accent-success); margin-bottom: 8px; }
+        .card .price span { font-size: 0.5em; font-weight: 400; color: var(--text-muted); }
+        .card p { font-size: 0.85em; color: var(--text-muted); margin: 0; }
+
+        .summary-box {
+            background: linear-gradient(135deg, rgba(99,102,241,0.1), rgba(139,92,246,0.05));
+            border: 1px solid rgba(99,102,241,0.2);
+            border-radius: var(--radius);
+            padding: 32px;
+            margin: 24px 0;
+        }
+        .summary-box h4 { color: var(--accent-light); margin-bottom: 16px; }
+        .summary-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(51,65,85,0.5); }
+        .summary-row:last-child { border-bottom: none; }
+        .summary-row .label { color: var(--text-secondary); }
+        .summary-row .value { font-weight: 700; color: var(--text-primary); font-family: 'JetBrains Mono', monospace; }
+        .summary-row .value.profit { color: var(--accent-success); }
+        .summary-row .value.loss { color: var(--accent-danger); }
+        .summary-row .value.warning { color: var(--accent-warning); }
+
+        .profit-highlight {
+            background: linear-gradient(135deg, rgba(16,185,129,0.1), rgba(5,150,105,0.05));
+            border: 1px solid rgba(16,185,129,0.3);
+            border-radius: var(--radius);
+            padding: 32px;
+            text-align: center;
+            margin: 32px 0;
+        }
+        .profit-highlight h4 { color: var(--accent-success); font-size: 1.3em; margin-bottom: 16px; }
+        .profit-number { font-size: 3em; font-weight: 900; background: linear-gradient(135deg, #34d399, #10b981); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .profit-detail { color: var(--text-secondary); margin-top: 8px; }
+
+        .badge-recommended {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--accent-success), #059669);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 50px;
+            font-size: 0.75em;
+            font-weight: 700;
+            margin-left: 8px;
+        }
+
+        .formula-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-left: 4px solid var(--accent-primary);
+            border-radius: var(--radius-sm);
+            padding: 20px 24px;
+            margin: 16px 0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9em;
+            color: var(--text-secondary);
+        }
+        .formula-box strong { color: var(--accent-light); }
+
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2em; }
+            .section h2 { font-size: 1.5em; }
+            .card-grid { grid-template-columns: 1fr; }
+        }
+
+        @media print {
+            body { background: white; color: black; }
+            .hero { background: #f3f4f6; color: black; }
+            .card, table, .summary-box { break-inside: avoid; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="hero">
+    <h1>Profit Calculation</h1>
+    <p>Perhitungan Bisnis Detail: 1 → 50 Pelanggan</p>
+    <div class="meta-badges">
+        <span class="badge">Fixed Cost Analysis</span>
+        <span class="badge">Variable Cost per Customer</span>
+        <span class="badge">Break-even Point</span>
+    </div>
+</div>
+
+<div class="container">
+
+    <!-- SECTION 1: FIXED COSTS -->
+    <div class="section">
+        <h2>1. Biaya Tetap (Fixed Costs)</h2>
+        <p>Biaya yang harus dibayar setiap bulan, berapa pun jumlah pelanggan.</p>
+
+        <table>
+            <tr>
+                <th>Item</th>
+                <th>Biaya/Bulan</th>
+                <th>Keterangan</th>
+            </tr>
+            <tr>
+                <td><strong>Hostinger KVM 2</strong></td>
+                <td class="number">Rp 155.900</td>
+                <td>2 vCPU, 8GB RAM, 100GB NVMe SSD</td>
+            </tr>
+            <tr>
+                <td><strong>Domain</strong></td>
+                <td class="number">Rp 15.000</td>
+                <td>.com atau .id (amortized per year)</td>
+            </tr>
+            <tr>
+                <td><strong>Email Service</strong></td>
+                <td class="number">Rp 0</td>
+                <td>Zoho Mail Free tier</td>
+            </tr>
+            <tr>
+                <td><strong>CDN + SSL</strong></td>
+                <td class="number">Rp 0</td>
+                <td>Cloudflare Free tier</td>
+            </tr>
+            <tr>
+                <td><strong>Monitoring</strong></td>
+                <td class="number">Rp 0</td>
+                <td>UptimeRobot Free tier</td>
+            </tr>
+            <tr>
+                <td><strong>Backup</strong></td>
+                <td class="number">Rp 0</td>
+                <td>Google Drive 15GB free</td>
+            </tr>
+            <tr>
+                <td><strong>Miscellaneous</strong></td>
+                <td class="number">Rp 50.000</td>
+                <td>Resipien, tools, dll</td>
+            </tr>
+            <tr style="background: rgba(99,102,241,0.05);">
+                <td><strong>TOTAL FIXED COSTS</strong></td>
+                <td class="number"><strong>Rp 220.900</strong></td>
+                <td><strong>Per bulan, terlepas dari jumlah pelanggan</strong></td>
+            </tr>
+        </table>
+
+        <div class="formula-box">
+            <strong>Formula:</strong> Total Fixed Cost = Rp 155.900 + Rp 15.000 + Rp 50.000 = <strong>Rp 220.900/bulan</strong>
+        </div>
+    </div>
+
+    <!-- SECTION 2: VARIABLE COSTS -->
+    <div class="section">
+        <h2>2. Biaya Variabel per Pelanggan (Variable Costs)</h2>
+        <p>Biaya yang tergantung pada jumlah artikel yang diproduksi pelanggan (via OpenRouter Smart Routing).</p>
+
+        <h3>2.1 Biaya per Artikel (Smart Routing)</h3>
+        <table>
+            <tr>
+                <th>Tahap</th>
+                <th>Model</th>
+                <th>Biaya/Artikel</th>
+            </tr>
+            <tr>
+                <td>Riset</td>
+                <td>DeepSeek V4 Flash</td>
+                <td class="number">Rp 300 - 600</td>
+            </tr>
+            <tr>
+                <td>Verifikasi</td>
+                <td>GPT-4o mini</td>
+                <td class="number">Rp 1.000 - 2.000</td>
+            </tr>
+            <tr>
+                <td>Writer</td>
+                <td>Claude Sonnet 4.5</td>
+                <td class="number">Rp 15.000 - 30.000</td>
+            </tr>
+            <tr>
+                <td>Editor</td>
+                <td>GPT-4.1</td>
+                <td class="number">Rp 8.000 - 20.000</td>
+            </tr>
+            <tr>
+                <td>Publisher</td>
+                <td>Gemini 2.5 Flash</td>
+                <td class="number">Rp 500 - 1.500</td>
+            </tr>
+            <tr style="background: rgba(99,102,241,0.05);">
+                <td><strong>TOTAL</strong></td>
+                <td><strong>5 Agen</strong></td>
+                <td class="number"><strong>Rp 24.800 - 54.100</strong></td>
+            </tr>
+        </table>
+
+        <h3>2.2 Biaya per Pelanggan per Paket</h3>
+        <table>
+            <tr>
+                <th>Paket</th>
+                <th>Artikel/Bulan</th>
+                <th>Biaya Minimum</th>
+                <th>Biaya Maksimum</th>
+                <th>Biaya Rata-rata</th>
+            </tr>
+            <tr>
+                <td><strong>Starter</strong></td>
+                <td>30</td>
+                <td class="number">Rp 744.000</td>
+                <td class="number">Rp 1.623.000</td>
+                <td class="number">Rp 1.183.500</td>
+            </tr>
+            <tr>
+                <td><strong>Professional</strong></td>
+                <td>150</td>
+                <td class="number">Rp 3.720.000</td>
+                <td class="number">Rp 8.115.000</td>
+                <td class="number">Rp 5.917.500</td>
+            </tr>
+            <tr>
+                <td><strong>Enterprise</strong></td>
+                <td>80 (Fair Use)</td>
+                <td class="number">Rp 1.984.000</td>
+                <td class="number">Rp 4.328.000</td>
+                <td class="number">Rp 3.156.000</td>
+            </tr>
+            <tr>
+                <td><strong>Enterprise Ultra</strong></td>
+                <td>400 (Fair Use)</td>
+                <td class="number">Rp 9.920.000</td>
+                <td class="number">Rp 21.640.000</td>
+                <td class="number">Rp 15.780.000</td>
+            </tr>
+        </table>
+
+        <div class="formula-box">
+            <strong>Formula:</strong> Biaya per Pelanggan = Jumlah Artikel × Biaya per Artikel<br>
+            <strong>Starter:</strong> 30 × Rp 24.800 = Rp 744.000 (min) | 30 × Rp 54.100 = Rp 1.623.000 (max)<br>
+            <strong>Professional:</strong> 150 × Rp 24.800 = Rp 3.720.000 (min) | 150 × Rp 54.100 = Rp 8.115.000 (max)<br>
+            <strong>Enterprise:</strong> 80 × Rp 24.800 = Rp 1.984.000 (min) | 80 × Rp 54.100 = Rp 4.328.000 (max)<br>
+            <strong>Enterprise Ultra:</strong> 400 × Rp 24.800 = Rp 9.920.000 (min) | 400 × Rp 54.100 = Rp 21.640.000 (max)
+        </div>
+    </div>
+
+    <!-- SECTION 3: UNIT ECONOMICS -->
+    <div class="section">
+        <h2>3. Unit Economics per Paket</h2>
+        <p>Perbandingan harga jual vs biaya produksi per paket.</p>
+
+        <table>
+            <tr>
+                <th>Paket</th>
+                <th>Harga Jual</th>
+                <th>Biaya Min</th>
+                <th>Biaya Max</th>
+                <th>Profit Min</th>
+                <th>Profit Max</th>
+                <th>Margin</th>
+            </tr>
+            <tr>
+                <td><strong>Starter</strong></td>
+                <td class="number">Rp 399.000</td>
+                <td class="number">Rp 744.000</td>
+                <td class="number">Rp 1.623.000</td>
+                <td class="number" style="color: var(--accent-danger);">-Rp 1.224.000</td>
+                <td class="number" style="color: var(--accent-success);">+Rp 1.224.000</td>
+                <td>-207% - 507%</td>
+            </tr>
+            <tr>
+                <td><strong>Professional</strong></td>
+                <td class="number">Rp 799.000</td>
+                <td class="number">Rp 3.720.000</td>
+                <td class="number">Rp 8.115.000</td>
+                <td class="number" style="color: var(--accent-danger);">-Rp 7.316.000</td>
+                <td class="number" style="color: var(--accent-success);">+Rp 2.921.000</td>
+                <td>-37% - 767%</td>
+            </tr>
+            <tr>
+                <td><strong>Enterprise</strong></td>
+                <td class="number">Rp 2.499.000</td>
+                <td class="number">Rp 1.984.000</td>
+                <td class="number">Rp 4.328.000</td>
+                <td class="number" style="color: var(--accent-success);">+Rp 171.000</td>
+                <td class="number" style="color: var(--accent-success);">+Rp 515.000</td>
+                <td>7% - 21%</td>
+            </tr>
+            <tr>
+                <td><strong>Enterprise Ultra</strong></td>
+                <td class="number">Rp 6.999.000</td>
+                <td class="number">Rp 9.920.000</td>
+                <td class="number">Rp 21.640.000</td>
+                <td class="number" style="color: var(--accent-danger);">-Rp 14.641.000</td>
+                <td class="number" style="color: var(--accent-success);">+Rp 2.079.000</td>
+                <td>-209% - 194%</td>
+            </tr>
+        </table>
+
+        <div class="summary-box">
+            <h4>💡 Insight Unit Economics</h4>
+            <div class="summary-row">
+                <span class="label">Starter & Professional</span>
+                <span class="value warning">Harga terlalu rendah vs biaya — butuh volume tinggi</span>
+            </div>
+            <div class="summary-row">
+                <span class="label">Enterprise</span>
+                <span class="value profit">Margin 7-21% — sustainable dengan Fair Use Policy</span>
+            </div>
+            <div class="summary-row">
+                <span class="label">Enterprise Ultra</span>
+                <span class="value warning">Harga perlu dinaikkan atau biaya diturunkan</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECTION 4: PROFIT CALCULATION 1-50 CUSTOMERS -->
+    <div class="section">
+        <h2>4. Perhitungan Profit: 1 → 50 Pelanggan</h2>
+        <p>Asumsi: Campuran paket 20% Starter, 50% Professional, 25% Enterprise, 5% Ultra</p>
+
+        <h3>4.1 Skenario Konservatif (Biaya Tinggi, 5 Pelanggan)</h3>
+        <table>
+            <tr>
+                <th>Pelanggan</th>
+                <th>Campuran</th>
+                <th>Pendapatan</th>
+                <th>Biaya Variabel</th>
+                <th>Biaya Tetap</th>
+                <th>Total Biaya</th>
+                <th>Profit/Rugi</th>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>1 Starter</td>
+                <td class="number">Rp 399.000</td>
+                <td class="number">Rp 1.623.000</td>
+                <td class="number">Rp 220.900</td>
+                <td class="number">Rp 1.843.900</td>
+                <td class="number loss">-Rp 1.444.900</td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td>2 Starter</td>
+                <td class="number">Rp 798.000</td>
+                <td class="number">Rp 3.246.000</td>
+                <td class="number">Rp 220.900</td>
+                <td class="number">Rp 3.466.900</td>
+                <td class="number loss">-Rp 2.668.900</td>
+            </tr>
+            <tr>
+                <td>3</td>
+                <td>3 Starter</td>
+                <td class="number">Rp 1.197.000</td>
+                <td class="number">Rp 4.869.000</td>
+                <td class="number">Rp 220.900</td>
+                <td class="number">Rp 5.089.900</td>
+                <td class="number loss">-Rp 3.892.900</td>
+            </tr>
+            <tr>
+                <td>5</td>
+                <td>5 Starter</td>
+                <td class="number">Rp 1.995.000</td>
+                <td class="number">Rp 8.115.000</td>
+                <td class="number">Rp 220.900</td>
+                <td class="number">Rp 8.335.900</td>
+                <td class="number loss">-Rp 6.340.900</td>
+            </tr>
+        </table>
+
+        <h3>4.2 Skenario Realistis (Biaya Rata-rata, Campuran Paket)</h3>
+        <table>
+            <tr>
+                <th>Pelanggan</th>
+                <th>Campuran</th>
+                <th>Pendapatan</th>
+                <th>Biaya Variabel</th>
+                <th>Biaya Tetap</th>
+                <th>Total Biaya</th>
+                <th>Profit/Rugi</th>
+                <th>Margin</th>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>1 Starter</td>
+                <td class="number">Rp 399.000</td>
+                <td class="number">Rp 1.183.500</td>
+                <td class="number">Rp 220.900</td>
+                <td class="number">Rp 1.404.400</td>
+                <td class="number loss">-Rp 1.005.400</td>
+                <td class="number loss">-252%</td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td>1 Starter + 1 Pro</td>
+                <td class="number">Rp 1.198.000</td>
+                <td class="number">Rp 7.101.000</td>
+                <td class="number">Rp 220.900</td>
+                <td class="number">Rp 7.321.900</td>
+                <td class="number loss">-Rp 6.123.900</td>
+                <td class="number loss">-511%</td>
+            </tr>
+            <tr class="recommended">
+                <td>5</td>
+                <td>1 Starter + 2 Pro + 2 Ent</td>
+                <td class="number">Rp 7.985.000</td>
+                <td class="number">Rp 14.673.500</td>
+                <td class="number">Rp 220.900</td>
+                <td class="number">Rp 14.894.400</td>
+                <td class="number loss">-Rp 6.909.400</td>
+                <td class="number loss">-87%</td>
+            </tr>
+            <tr>
+                <td>10</td>
+                <td>2 Starter + 5 Pro + 3 Ent</td>
+                <td class="number">Rp 15.970.000</td>
+                <td class="number">Rp 29.347.000</td>
+                <td class="number">Rp 220.900</td>
+                <td class="number">Rp 29.567.900</td>
+                <td class="number loss">-Rp 13.597.900</td>
+                <td class="number loss">-85%</td>
+            </tr>
+            <tr>
+                <td>20</td>
+                <td>4 Starter + 10 Pro + 5 Ent + 1 Ultra</td>
+                <td class="number">Rp 31.940.000</td>
+                <td class="number">Rp 60.247.000</td>
+                <td class="number">Rp 220.900</td>
+                <td class="number">Rp 60.467.900</td>
+                <td class="number loss">-Rp 28.527.900</td>
+                <td class="number loss">-89%</td>
+            </tr>
+        </table>
+
+        <div class="profit-highlight">
+            <h4>⚠️ Realisasi</h4>
+            <p class="profit-detail" style="font-size: 1.1em;">
+                Dengan harga saat ini, bisnis <strong>tidak profitable</strong> bahkan dengan 20 pelanggan.
+                Perlu <strong>penyesuaian harga</strong> atau <strong>penurunan biaya</strong>.
+            </p>
+        </div>
+    </div>
+
+    <!-- SECTION 5: ADJUSTED PRICING -->
+    <div class="section">
+        <h2>5. Penyesuaian Harga agar Profitable</h2>
+        <p>Harga disesuaikan berdasarkan unit economics agar margin minimal 30%.</p>
+
+        <table>
+            <tr>
+                <th>Paket</th>
+                <th>Harga Lama</th>
+                <th>Harga Baru</th>
+                <th>Biaya Rata-rata</th>
+                <th>Margin</th>
+                <th>Kenaikan</th>
+            </tr>
+            <tr>
+                <td><strong>Starter</strong></td>
+                <td class="number">Rp 399.000</td>
+                <td class="number">Rp 1.499.000</td>
+                <td class="number">Rp 1.183.500</td>
+                <td class="number profit">21%</td>
+                <td class="number">+276%</td>
+            </tr>
+            <tr>
+                <td><strong>Professional</strong></td>
+                <td class="number">Rp 799.000</td>
+                <td class="number">Rp 6.999.000</td>
+                <td class="number">Rp 5.917.500</td>
+                <td class="number profit">15%</td>
+                <td class="number">+776%</td>
+            </tr>
+            <tr>
+                <td><strong>Enterprise</strong></td>
+                <td class="number">Rp 2.499.000</td>
+                <td class="number">Rp 3.499.000</td>
+                <td class="number">Rp 3.156.000</td>
+                <td class="number profit">10%</td>
+                <td class="number">+40%</td>
+            </tr>
+            <tr>
+                <td><strong>Enterprise Ultra</strong></td>
+                <td class="number">Rp 6.999.000</td>
+                <td class="number">Rp 15.999.000</td>
+                <td class="number">Rp 15.780.000</td>
+                <td class="number profit">1%</td>
+                <td class="number">+129%</td>
+            </tr>
+        </table>
+
+        <div class="summary-box">
+            <h4>💡 Masalah Fundamental</h4>
+            <div class="summary-row">
+                <span class="label">Biaya per artikel (Smart Routing)</span>
+                <span class="value cost">Rp 24.800 - 54.100</span>
+            </div>
+            <div class="summary-row">
+                <span class="label">Harga kompetitif di pasaran</span>
+                <span class="value">Rp 399.000 - Rp 1.499.000/bulan</span>
+            </div>
+            <div class="summary-row">
+                <span class="label">Konflik</span>
+                <span class="value warning">Untuk profitable, harga harus 3-7x lebih tinggi dari biaya rata-rata</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECTION 6: BREAK-EVEN ANALYSIS -->
+    <div class="section">
+        <h2>6. Break-Even Analysis</h2>
+        <p>Berapa jumlah pelanggan minimum agar bisnis mulai untung?</p>
+
+        <table>
+            <tr>
+                <th>Skenario</th>
+                <th>Biaya Tetap</th>
+                <th>Contribution Margin/Pelanggan</th>
+                <th>Break-Even Point</th>
+            </tr>
+            <tr>
+                <td><strong>Starter Only</strong></td>
+                <td class="number">Rp 220.900</td>
+                <td class="number">-Rp 784.500</td>
+                <td class="number loss">Tidak pernah BEP</td>
+            </tr>
+            <tr>
+                <td><strong>Professional Only</strong></td>
+                <td class="number">Rp 220.900</td>
+                <td class="number">-Rp 5.118.500</td>
+                <td class="number loss">Tidak pernah BEP</td>
+            </tr>
+            <tr>
+                <td><strong>Enterprise Only</strong></td>
+                <td class="number">Rp 220.900</td>
+                <td class="number">-Rp 657.000</td>
+                <td class="number loss">Tidak pernah BEP</td>
+            </tr>
+            <tr>
+                <td><strong>Campuran (20/50/25/5)</strong></td>
+                <td class="number">Rp 220.900</td>
+                <td class="number">-Rp 4.500.000</td>
+                <td class="number loss">Tidak pernah BEP</td>
+            </tr>
+        </table>
+
+        <div class="profit-highlight">
+            <h4>🚨 Kesimpulan</h4>
+            <p class="profit-detail" style="font-size: 1.1em;">
+                Dengan harga saat ini, <strong>tidak ada BEP</strong> karena harga jual < biaya variabel per pelanggan.
+                Perlu <strong>restructuring harga</strong> atau <strong>menurunkan biaya per artikel</strong>.
+            </p>
+        </div>
+    </div>
+
+    <!-- SECTION 7: RECOMMENDATION -->
+    <div class="section">
+        <h2>7. Rekomendasi Strategi</h2>
+
+        <div class="card-grid">
+            <div class="card">
+                <h4>📈 Opsi 1: Naikkan Harga</h4>
+                <div class="price">3-7x</div>
+                <p>Naikkan harga 3-7x lipat agar margin minimal 15-30%. Risiko: kurang kompetitif.</p>
+            </div>
+            <div class="card">
+                <h4>📉 Opsi 2: Turunkan Biaya</h4>
+                <div class="price">50-70%</div>
+                <p>Gunakan model lebih murah (DeepSeek only) atau negosiasikan rate khusus dengan OpenRouter.</p>
+            </div>
+            <div class="card">
+                <h4>🔄 Opsi 3: Hybrid</h4>
+                <div class="price">Balance</div>
+                <p>Kombinasi: naikkan harga 2x + turunkan biaya 30% + tambah value proposition.</p>
+            </div>
+        </div>
+
+        <div class="summary-box">
+            <h4>🎯 Rekomendasi Final</h4>
+            <div class="summary-row">
+                <span class="label">Strategi</span>
+                <span class="value">Opsi 3: Hybrid</span>
+            </div>
+            <div class="summary-row">
+                <span class="label">Harga baru</span>
+                <span class="value">Rp 799.000 - Rp 7.999.000/bulan</span>
+            </div>
+            <div class="summary-row">
+                <span class="label">Biaya baru</span>
+                <span class="value">Rp 12.000 - 30.000/artikel</span>
+            </div>
+            <div class="summary-row">
+                <span class="label">Margin target</span>
+                <span class="value profit">25-40%</span>
+            </div>
+            <div class="summary-row">
+                <span class="label">Break-even</span>
+                <span class="value profit">2-5 pelanggan</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <div style="text-align: center; padding: 40px; color: var(--text-muted); font-size: 0.85em; border-top: 1px solid var(--border); margin-top: 60px;">
+        <p><strong>AI Content Team</strong> — Profit Calculation Detail</p>
+        <p>© 2026 | Fixed Cost + Variable Cost + Break-even Analysis</p>
+    </div>
+
+</div>
+
+</body>
+</html>
