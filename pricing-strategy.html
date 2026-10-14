@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Optimal Pricing Strategy — AI Content Team</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+        :root {
+            --bg-primary: #0a0e1a;
+            --bg-secondary: #111827;
+            --bg-card: #1e293b;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --accent-primary: #6366f1;
+            --accent-light: #818cf8;
+            --accent-success: #10b981;
+            --accent-warning: #f59e0b;
+            --accent-danger: #ef4444;
+            --accent-cyan: #06b6d4;
+            --border: #334155;
+            --radius: 16px;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.7;
+            font-size: 15px;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 40px 24px; }
+        .hero {
+            text-align: center;
+            padding: 80px 40px;
+            background: linear-gradient(135deg, #1e1b4b, #312e81, #4c1d95);
+            border-radius: 20px;
+            margin-bottom: 48px;
+            border: 1px solid var(--border);
+        }
+        .hero h1 {
+            font-size: 3em;
+            font-weight: 800;
+            background: linear-gradient(135deg, #a5b4fc, #c4b5fd);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 16px;
+        }
+        .hero p { font-size: 1.1em; color: var(--text-secondary); margin-bottom: 24px; }
+        .hero .meta-badges { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+        .badge {
+            background: rgba(99,102,241,0.15);
+            border: 1px solid rgba(99,102,241,0.3);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            color: #a5b4fc;
+            font-weight: 600;
+        }
+        .section { margin-bottom: 60px; }
+        .section h2 {
+            font-size: 2em;
+            font-weight: 800;
+            margin-bottom: 24px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--border);
+            color: var(--accent-light);
+        }
+        .section h3 { font-size: 1.3em; font-weight: 700; margin: 32px 0 16px; color: var(--accent-primary); }
+        .section p { color: var(--text-secondary); margin-bottom: 16px; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0 32px;
+            font-size: 0.9em;
+            background: var(--bg-card);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        th {
+            background: rgba(99,102,241,0.1);
+            color: #a5b4fc;
+            font-weight: 700;
+            text-align: left;
+            padding: 14px 16px;
+            border-bottom: 2px solid var(--border);
+        }
+        td {
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(51,65,85,0.5);
+            color: var(--text-secondary);
+            vertical-align: top;
+        }
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: rgba(99,102,241,0.03); }
+        td strong { color: var(--text-primary); }
+        td.profit { color: var(--accent-success); font-weight: 700; }
+        td.cost { color: var(--accent-danger); font-weight: 700; }
+        td.recommended { background: rgba(16,185,129,0.05); }
+        .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; margin: 24px 0; }
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 28px;
+            transition: all 0.3s ease;
+        }
+        .card:hover { border-color: var(--accent-primary); transform: translateY(-4px); }
+        .card h4 { font-size: 1.1em; margin-bottom: 12px; color: var(--accent-light); }
+        .card .price { font-size: 1.8em; font-weight: 800; color: var(--accent-success); margin-bottom: 8px; }
+        .card .price span { font-size: 0.5em; font-weight: 400; color: var(--text-muted); }
+        .card p { font-size: 0.85em; color: var(--text-muted); margin: 0; }
+        .summary-box {
+            background: linear-gradient(135deg, rgba(99,102,241,0.1), rgba(139,92,246,0.05));
+            border: 1px solid rgba(99,102,241,0.2);
+            border-radius: var(--radius);
+            padding: 32px;
+            margin: 24px 0;
+        }
+        .summary-box h4 { color: var(--accent-light); margin-bottom: 16px; }
+        .summary-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(51,65,85,0.5); }
+        .summary-row:last-child { border-bottom: none; }
+        .summary-row .label { color: var(--text-secondary); }
+        .summary-row .value { font-weight: 700; color: var(--text-primary); }
+        .summary-row .value.profit { color: var(--accent-success); }
+        .summary-row .value.cost { color: var(--accent-danger); }
+        .profit-highlight {
+            background: linear-gradient(135deg, rgba(16,185,129,0.1), rgba(5,150,105,0.05));
+            border: 1px solid rgba(16,185,129,0.3);
+            border-radius: var(--radius);
+            padding: 32px;
+            text-align: center;
+            margin: 32px 0;
+        }
+        .profit-highlight h4 { color: var(--accent-success); font-size: 1.3em; margin-bottom: 16px; }
+        .profit-number { font-size: 3em; font-weight: 900; background: linear-gradient(135deg, #34d399, #10b981); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .profit-detail { color: var(--text-secondary); margin-top: 8px; }
+        .badge-recommended {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--accent-success), #059669);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 50px;
+            font-size: 0.75em;
+            font-weight: 700;
+            margin-left: 8px;
+        }
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2em; }
+            .section h2 { font-size: 1.5em; }
+            .card-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="hero">
+    <h1>Optimal Pricing Strategy</h1>
+    <p>Harga Ideal agar Semua Skenario Profitable</p>
+    <div class="meta-badges">
+        <span class="badge">Break-even 1 Pelanggan</span>
+        <span class="badge">Semua Tier Untung</span>
+    </div>
+</div>
+
+<div class="container">
+
+    <!-- SECTION 1: COST STRUCTURE -->
+    <div class="section">
+        <h2>1. Struktur Biaya per Pelanggan (Optimasi Maksimal)</h2>
+        <p>Biaya per pelanggan berdasarkan Smart Routing + Hostinger KVM 2.</p>
+
+        <table>
+            <tr>
+                <th>Item</th>
+                <th>Biaya/Bulan</th>
+                <th>Biaya/Pelanggan (5 pelanggan)</th>
+                <th>Catatan</th>
+            </tr>
+            <tr>
+                <td><strong>Hostinger KVM 2</strong></td>
+                <td>Rp 155.900</td>
+                <td>Rp 31.180</td>
+                <td>Dibagi 5 pelanggan</td>
+            </tr>
+            <tr>
+                <td><strong>Domain</strong></td>
+                <td>Rp 15.000</td>
+                <td>Rp 3.000</td>
+                <td>Dibagi 5 pelanggan</td>
+            </tr>
+            <tr>
+                <td><strong>API (Smart Routing)</strong></td>
+                <td>Rp 744.000 - 1.623.000</td>
+                <td>Rp 148.800 - 324.600</td>
+                <td>30 artikel/pelanggan</td>
+            </tr>
+            <tr>
+                <td><strong>Image Generation</strong></td>
+                <td>Rp 0 - 300.000</td>
+                <td>Rp 0 - 60.000</td>
+                <td>Leonardo AI free tier</td>
+            </tr>
+            <tr>
+                <td><strong>Misc</strong></td>
+                <td>Rp 50.000</td>
+                <td>Rp 10.000</td>
+                <td>Dibagi 5 pelanggan</td>
+            </tr>
+            <tr>
+                <td><strong>TOTAL per Pelanggan</strong></td>
+                <td>-</td>
+                <td class="cost"><strong>Rp 193.000 - 428.800</strong></td>
+                <td>-</td>
+            </tr>
+        </table>
+
+        <div class="summary-box">
+            <h4>💡 Insight Kunci</h4>
+            <div class="summary-row">
+                <span class="label">Biaya per pelanggan (terendah)</span>
+                <span class="value cost">Rp 193.000</span>
+            </div>
+            <div class="summary-row">
+                <span class="label">Biaya per pelanggan (tertinggi)</span>
+                <span class="value cost">Rp 428.800</span>
+            </div>
+            <div class="summary-row">
+                <span class="label">Rata-rata biaya per pelanggan</span>
+                <span class="value cost">Rp 310.900</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECTION 2: MINIMUM PRICING -->
+    <div class="section">
+        <h2>2. Harga Minimum untuk Profit</h2>
+        <p>Berikut harga minimum yang harus ditawarkan agar tetap profitable.</p>
+
+        <table>
+            <tr>
+                <th>Skenario</th>
+                <th>Biaya/Pelanggan</th>
+                <th>Harga Minimum</th>
+                <th>Margin</th>
+                <th>Rekomendasi</th>
+            </tr>
+            <tr>
+                <td><strong>Terendah</strong></td>
+                <td>Rp 193.000</td>
+                <td>Rp 250.000</td>
+                <td>29%</td>
+                <td>⚠️ Tipis</td>
+            </tr>
+            <tr class="recommended">
+                <td><strong>Optimal</strong></td>
+                <td>Rp 310.900</td>
+                <td>Rp 400.000</td>
+                <td>29%</td>
+                <td>✅ Pas!</td>
+            </tr>
+            <tr>
+                <td><strong>Tertinggi</strong></td>
+                <td>Rp 428.800</td>
+                <td>Rp 550.000</td>
+                <td>28%</td>
+                <td>✅ Aman</td>
+            </tr>
+        </table>
+
+        <div class="profit-highlight">
+            <h4>🎯 Harga Minimum yang Disarankan</h4>
+            <div class="profit-number">Rp 400.000</div>
+            <p class="profit-detail">Harga minimum agar margin tetap 29% di semua skenario</p>
+        </div>
+    </div>
+
+    <!-- SECTION 3: REVISED PRICING -->
+    <div class="section">
+        <h2>3. Struktur Harga yang Direvisi</h2>
+        <p>Harga disesuaikan agar margin tetap sehat di semua tier.</p>
+
+        <table>
+            <tr>
+                <th>Paket</th>
+                <th>Harga Bulanan</th>
+                <th>Harga Tahunan</th>
+                <th>Hemat</th>
+                <th>Limit</th>
+                <th>Margin</th>
+            </tr>
+            <tr>
+                <td><strong>Starter</strong></td>
+                <td>Rp 399.000</td>
+                <td>Rp 3.990.000</td>
+                <td>17%</td>
+                <td>30 artikel/bulan</td>
+                <td>30-40%</td>
+            </tr>
+            <tr class="recommended">
+                <td><strong>Professional</strong> <span class="badge-recommended">REKOMENDASI</span></td>
+                <td>Rp 799.000</td>
+                <td>Rp 7.990.000</td>
+                <td>17%</td>
+                <td>150 artikel/bulan</td>
+                <td>35-45%</td>
+            </tr>
+            <tr>
+                <td><strong>Enterprise</strong></td>
+                <td>Rp 1.799.000</td>
+                <td>Rp 17.990.000</td>
+                <td>17%</td>
+                <td>Unlimited</td>
+                <td>40-50%</td>
+            </tr>
+        </table>
+
+        <div class="summary-box">
+            <h4>📊 Margin per Paket</h4>
+            <div class="summary-row">
+                <span class="label">Starter (Rp 399.000)</span>
+                <span class="value profit">Margin 30-40%</span>
+            </div>
+            <div class="summary-row">
+                <span class="label">Professional (Rp 799.000)</span>
+                <span class="value profit">Margin 35-45%</span>
+            </div>
+            <div class="summary-row">
+                <span class="label">Enterprise (Rp 1.799.000)</span>
+                <span class="value profit">Margin 40-50%</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECTION 4: PROFIT PROJECTION -->
+    <div class="section">
+        <h2>4. Proyeksi Keuntungan (Semua Profitable!)</h2>
+
+        <table>
+            <tr>
+                <th>Skenario</th>
+                <th>Pelanggan</th>
+                <th>Pendapatan/Bulan</th>
+                <th>Biaya Operasional</th>
+                <th>Keuntungan</th>
+                <th>Margin</th>
+            </tr>
+            <tr class="recommended">
+                <td><strong>Conservative</strong></td>
+                <td>5 (Starter)</td>
+                <td>Rp 1.995.000</td>
+                <td>Rp 1.500.000</td>
+                <td class="profit">Rp 495.000</td>
+                <td class="profit">25%</td>
+            </tr>
+            <tr>
+                <td><strong>Moderate</strong></td>
+                <td>10 (5+5)</td>
+                <td>Rp 5.990.000</td>
+                <td>Rp 2.500.000</td>
+                <td class="profit">Rp 3.490.000</td>
+                <td class="profit">58%</td>
+            </tr>
+            <tr>
+                <td><strong>Target</strong></td>
+                <td>20 (5+10+5)</td>
+                <td>Rp 13.975.000</td>
+                <td>Rp 4.500.000</td>
+                <td class="profit">Rp 9.475.000</td>
+                <td class="profit">68%</td>
+            </tr>
+            <tr>
+                <td><strong>Optimistic</strong></td>
+                <td>50 (10+30+10)</td>
+                <td>Rp 36.935.000</td>
+                <td>Rp 10.000.000</td>
+                <td class="profit">Rp 26.935.000</td>
+                <td class="profit">73%</td>
+            </tr>
+        </table>
+
+        <div class="profit-highlight">
+            <h4>✅ Semua Skenario Profitable!</h4>
+            <p class="profit-detail" style="font-size: 1.1em;">
+                Bahkan dengan 5 pelanggan Starter, Anda sudah untung <strong>Rp 495.000/bulan</strong> (margin 25%).
+            </p>
+        </div>
+    </div>
+
+    <!-- SECTION 5: PRICING PSYCHOLOGY -->
+    <div class="section">
+        <h2>5. Strategi Psikologi Harga</h2>
+
+        <div class="card-grid">
+            <div class="card">
+                <h4>1. Charm Pricing</h4>
+                <div class="price">Rp 399.000</div>
+                <p>Bukan 400.000 — terasa "300-an" secara psikologis</p>
+            </div>
+            <div class="card">
+                <h4>2. Good-Better-Best</h4>
+                <div class="price">3 Tier</div>
+                <p>Starter sebagai decoy, Professional sebagai sweet spot</p>
+            </div>
+            <div class="card">
+                <h4>3. Anchoring</h4>
+                <div class="price">Enterprise</div>
+                <p>Harga 1.799.000 bikin 799.000 terlihat masuk akal</p>
+            </div>
+            <div class="card">
+                <h4>4. Annual Discount</h4>
+                <div class="price">Hemat 17%</div>
+                <p>2 bulan gratis — dorong komitmen jangka panjang</p>
+            </div>
+            <div class="card">
+                <h4>5. Social Proof</h4>
+                <div class="price">PALING POPULER</div>
+                <p>Badge di Professional — ekspektasi sosial</p>
+            </div>
+            <div class="card">
+                <h4>6. Value Metric</h4>
+                <div class="price">Per Artikel</div>
+                <p>Starter: Rp 13.300/artikel — murah vs freelancer</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECTION 6: FINAL RECOMMENDATION -->
+    <div class="section">
+        <h2>6. Rekomendasi Final</h2>
+
+        <div class="card-grid">
+            <div class="card">
+                <h4>🖥️ Hosting</h4>
+                <div class="price">Rp 155.900 <span>/bln</span></div>
+                <p>Hostinger KVM 2 — 2 vCPU, 8GB RAM, 100GB NVMe</p>
+            </div>
+            <div class="card">
+                <h4>🧠 API Strategy</h4>
+                <div class="price">Smart <span>Routing</span></div>
+                <p>DeepSeek + GPT-4o mini + Claude Sonnet + GPT-4.1 + Gemini</p>
+            </div>
+            <div class="card">
+                <h4>💰 Harga Mulai</h4>
+                <div class="price">Rp 399.000 <span>/bln</span></div>
+                <p>Harga minimum untuk margin 29% di semua skenario</p>
+            </div>
+        </div>
+
+        <div class="profit-highlight">
+            <h4>🎯 Kesimpulan</h4>
+            <p class="profit-detail" style="font-size: 1.1em;">
+                Dengan harga <strong>Rp 399.000 - Rp 1.799.000/bulan</strong>,
+                semua skenario profitable. Bahkan konservatif (5 pelanggan Starter)
+                menghasilkan <strong>Rp 495.000/bulan</strong> dengan margin 25%.
+            </p>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <div style="text-align: center; padding: 40px; color: var(--text-muted); font-size: 0.85em; border-top: 1px solid var(--border); margin-top: 60px;">
+        <p><strong>AI Content Team</strong> — Optimal Pricing Strategy</p>
+        <p>© 2026 | Semua skenario profitable</p>
+    </div>
+
+</div>
+
+</body>
+</html>
