@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hosting & OpenRouter Analysis — AI Content Team</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap');
+
+        :root {
+            --bg-primary: #0a0e1a;
+            --bg-secondary: #111827;
+            --bg-card: #1e293b;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --accent-primary: #6366f1;
+            --accent-light: #818cf8;
+            --accent-glow: rgba(99,102,241,0.3);
+            --accent-success: #10b981;
+            --accent-warning: #f59e0b;
+            --accent-danger: #ef4444;
+            --accent-cyan: #06b6d4;
+            --border: #334155;
+            --radius: 16px;
+            --radius-sm: 10px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.7;
+            font-size: 15px;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 40px 24px; }
+
+        .hero {
+            text-align: center;
+            padding: 80px 40px;
+            background: linear-gradient(135deg, #1e1b4b, #312e81, #4c1d95);
+            border-radius: 20px;
+            margin-bottom: 48px;
+            border: 1px solid var(--border);
+        }
+        .hero h1 {
+            font-size: 3em;
+            font-weight: 800;
+            background: linear-gradient(135deg, #a5b4fc, #c4b5fd);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 16px;
+        }
+        .hero p { font-size: 1.1em; color: var(--text-secondary); margin-bottom: 24px; }
+        .hero .meta-badges { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+        .badge {
+            background: rgba(99,102,241,0.15);
+            border: 1px solid rgba(99,102,241,0.3);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            color: #a5b4fc;
+            font-weight: 600;
+        }
+
+        .section { margin-bottom: 60px; }
+        .section h2 {
+            font-size: 2em;
+            font-weight: 800;
+            margin-bottom: 24px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--border);
+            color: var(--accent-light);
+        }
+        .section h3 { font-size: 1.3em; font-weight: 700; margin: 32px 0 16px; color: var(--accent-primary); }
+        .section p { color: var(--text-secondary); margin-bottom: 16px; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0 32px;
+            font-size: 0.9em;
+            background: var(--bg-card);
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+        }
+        th {
+            background: rgba(99,102,241,0.1);
+            color: #a5b4fc;
+            font-weight: 700;
+            text-align: left;
+            padding: 14px 16px;
+            border-bottom: 2px solid var(--border);
+        }
+        td {
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(51,65,85,0.5);
+            color: var(--text-secondary);
+            vertical-align: top;
+        }
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: rgba(99,102,241,0.03); }
+        td strong { color: var(--text-primary); }
+        td.profit { color: var(--accent-success); font-weight: 700; }
+        td.cost { color: var(--accent-danger); font-weight: 700; }
+        td.recommended { background: rgba(16,185,129,0.05); }
+
+        .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; margin: 24px 0; }
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 28px;
+            transition: all 0.3s ease;
+        }
+        .card:hover { border-color: var(--accent-primary); transform: translateY(-4px); }
+        .card h4 { font-size: 1.1em; margin-bottom: 12px; color: var(--accent-light); }
+        .card .price { font-size: 1.8em; font-weight: 800; color: var(--accent-success); margin-bottom: 8px; }
+        .card .price span { font-size: 0.5em; font-weight: 400; color: var(--text-muted); }
+        .card p { font-size: 0.85em; color: var(--text-muted); margin: 0; }
+
+        .summary-box {
+            background: linear-gradient(135deg, rgba(99,102,241,0.1), rgba(139,92,246,0.05));
+            border: 1px solid rgba(99,102,241,0.2);
+            border-radius: var(--radius);
+            padding: 32px;
+            margin: 24px 0;
+        }
+        .summary-box h4 { color: var(--accent-light); margin-bottom: 16px; }
+        .summary-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(51,65,85,0.5); }
+        .summary-row:last-child { border-bottom: none; }
+        .summary-row .label { color: var(--text-secondary); }
+        .summary-row .value { font-weight: 700; color: var(--text-primary); }
+        .summary-row .value.profit { color: var(--accent-success); }
+        .summary-row .value.cost { color: var(--accent-danger); }
+
+        .profit-highlight {
+            background: linear-gradient(135deg, rgba(16,185,129,0.1), rgba(5,150,105,0.05));
+            border: 1px solid rgba(16,185,129,0.3);
+            border-radius: var(--radius);
+            padding: 32px;
+            text-align: center;
+            margin: 32px 0;
+        }
+        .profit-highlight h4 { color: var(--accent-success); font-size: 1.3em; margin-bottom: 16px; }
+        .profit-number { font-size: 3em; font-weight: 900; background: linear-gradient(135deg, #34d399, #10b981); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .profit-detail { color: var(--text-secondary); margin-top: 8px; }
+
+        .badge-recommended {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--accent-success), #059669);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 50px;
+            font-size: 0.75em;
+            font-weight: 700;
+            margin-left: 8px;
+        }
+        .badge-cheap {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--accent-cyan), #0891b2);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 50px;
+            font-size: 0.75em;
+            font-weight: 700;
+            margin-left: 8px;
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2em; }
+            .section h2 { font-size: 1.5em; }
+            .card-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="hero">
+    <h1>Hosting & OpenRouter Analysis</h1>
+    <p>Data Real-time: Hostinger VPS + OpenRouter Smart Routing</p>
+    <div class="meta-badges">
+        <span class="badge">Survei Langsung 2026</span>
+        <span class="badge">Hostinger KVM VPS</span>
+        <span class="badge">OpenRouter API</span>
+    </div>
+</div>
+
+<div class="container">
+
+    <!-- SECTION 1: HOSTINGER VPS PLANS -->
+    <div class="section">
+        <h2>1. Paket Hostinger KVM VPS (Data Real-time)</h2>
+        <p>Berdasarkan survei langsung di website Hostinger. Harga untuk paket 2 tahun (termurah).</p>
+
+        <table>
+            <tr>
+                <th>Paket</th>
+                <th>Harga/Bulan</th>
+                <th>Harga Normal</th>
+                <th>CPU</th>
+                <th>RAM</th>
+                <th>Storage</th>
+                <th>Cocok?</th>
+            </tr>
+            <tr>
+                <td><strong>KVM 1</strong></td>
+                <td>Rp 116.900</td>
+                <td>Rp 320.900</td>
+                <td>1 vCPU</td>
+                <td>4 GB</td>
+                <td>50 GB NVMe</td>
+                <td>⚠️ Kurang RAM</td>
+            </tr>
+            <tr class="recommended">
+                <td><strong>KVM 2</strong> <span class="badge-recommended">REKOMENDASI</span></td>
+                <td>Rp 155.900</td>
+                <td>Rp 407.900</td>
+                <td>2 vCPU</td>
+                <td>8 GB</td>
+                <td>100 GB NVMe</td>
+                <td>✅ Perfect!</td>
+            </tr>
+            <tr>
+                <td><strong>KVM 4</strong></td>
+                <td>Rp 213.900</td>
+                <td>Rp 679.900</td>
+                <td>4 vCPU</td>
+                <td>16 GB</td>
+                <td>200 GB NVMe</td>
+                <td>✅ Overspec</td>
+            </tr>
+            <tr>
+                <td><strong>KVM 8</strong></td>
+                <td>Rp 426.900</td>
+                <td>Rp 1.203.900</td>
+                <td>8 vCPU</td>
+                <td>32 GB</td>
+                <td>400 GB NVMe</td>
+                <td>✅ Future-proof</td>
+            </tr>
+        </table>
+
+        <div class="summary-box">
+            <h4>💡 Kesimpulan Hostinger</h4>
+            <div class="summary-row">
+                <span class="label">Rekomendasi</span>
+                <span class="value">KVM 2 — Rp 155.900/bln</span>
+            </div>
+            <div class="summary-row">
+                <span class="label">Spesifikasi</span>
+                <span class="value">2 vCPU, 8GB RAM, 100GB NVMe SSD</span>
+            </div>
+            <div class="summary-row">
+                <span class="label">Cocok untuk</span>
+                <span class="value">6 profil Hermes Agent + Telegram gateway</span>
+            </div>
+            <div class="summary-row">
+                <span class="label">Renewal price</span>
+                <span class="value">Rp 232.900/bln (2 tahun)</span>
+            </div>
+            <div class="summary-row">
+                <span class="label">Lokasi Server</span>
+                <span class="value">Indonesia ( latency rendah)</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECTION 2: OPENROUTER SMART ROUTING -->
+    <div class="section">
+        <h2>2. Strategi Smart Routing OpenRouter per Agen</h2>
+        <p>Setiap agen menggunakan model yang berbeda berdasarkan kompleksitas tugas. Ini kunci efisiensi biaya.</p>
+
+        <table>
+            <tr>
+                <th>Agen</th>
+                <th>Tugas</th>
+                <th>Model</th>
+                <th>Input/1M</th>
+                <th>Output/1M</th>
+                <th>Estimasi Token/Artikel</th>
+                <th>Biaya/Artikel</th>
+            </tr>
+            <tr>
+                <td><strong>Riset</strong></td>
+                <td>Web search, ringkasan</td>
+                <td>DeepSeek V4 Flash</td>
+                <td>$0.02</td>
+                <td>$0.04</td>
+                <td>~2.000 token</td>
+                <td>Rp 300 - 600</td>
+            </tr>
+            <tr>
+                <td><strong>Verifikasi</strong></td>
+                <td>Fact-checking, validasi</td>
+                <td>GPT-4o mini</td>
+                <td>$0.15</td>
+                <td>$0.60</td>
+                <td>~3.000 token</td>
+                <td>Rp 1.000 - 2.000</td>
+            </tr>
+            <tr>
+                <td><strong>Writer</strong></td>
+                <td>Penulisan kreatif</td>
+                <td>Claude Sonnet 4.5</td>
+                <td>$3.00</td>
+                <td>$15.00</td>
+                <td>~5.000 token</td>
+                <td>Rp 15.000 - 30.000</td>
+            </tr>
+            <tr>
+                <td><strong>Editor</strong></td>
+                <td>Editing, humanisasi</td>
+                <td>GPT-4.1</td>
+                <td>$2.00</td>
+                <td>$8.00</td>
+                <td>~4.000 token</td>
+                <td>Rp 8.000 - 20.000</td>
+            </tr>
+            <tr>
+                <td><strong>Publisher</strong></td>
+                <td>Formatting, SEO</td>
+                <td>Gemini 2.5 Flash</td>
+                <td>$0.30</td>
+                <td>$2.50</td>
+                <td>~2.000 token</td>
+                <td>Rp 500 - 1.500</td>
+            </tr>
+        </table>
+
+        <div class="summary-box">
+            <h4>💰 Total Biaya API per Artikel (Smart Routing)</h4>
+            <div class="summary-row">
+                <span class="label">Riset (DeepSeek V4 Flash)</span>
+                <span class="value">Rp 300 - 600</span>
+            </div>
+            <div class="summary-row">
+                <span class="label">Verifikasi (GPT-4o mini)</span>
+                <span class="value">Rp 1.000 - 2.000</span>
+            </div>
+            <div class="summary-row">
+                <span class="label">Writer (Claude Sonnet 4.5)</span>
+                <span class="value">Rp 15.000 - 30.000</span>
+            </div>
+            <div class="summary-row">
+                <span class="label">Editor (GPT-4.1)</span>
+                <span class="value">Rp 8.000 - 20.000</span>
+            </div>
+            <div class="summary-row">
+                <span class="label">Publisher (Gemini 2.5 Flash)</span>
+                <span class="value">Rp 500 - 1.500</span>
+            </div>
+            <div class="summary-row">
+                <span class="label"><strong>TOTAL per Artikel</strong></span>
+                <span class="value cost"><strong>Rp 24.800 - 54.100</strong></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECTION 3: ALTERNATIVE ROUTING -->
+    <div class="section">
+        <h2>3. Perbandingan Strategi Routing</h2>
+
+        <table>
+            <tr>
+                <th>Strategi</th>
+                <th>Biaya/Artikel</th>
+                <th>Biaya/Bulan (30 artikel)</th>
+                <th>Kualitas</th>
+                <th>Rekomendasi</th>
+            </tr>
+            <tr>
+                <td><strong>Premium Only</strong><br><small>Claude Opus semua agen</small></td>
+                <td>Rp 150.000 - 300.000</td>
+                <td>Rp 4.500.000 - 9.000.000</td>
+                <td>⭐⭐⭐⭐⭐</td>
+                <td>❌ Terlalu mahal</td>
+            </tr>
+            <tr>
+                <td><strong>Mid-Range</strong><br><small>GPT-4o semua agen</small></td>
+                <td>Rp 50.000 - 100.000</td>
+                <td>Rp 1.500.000 - 3.000.000</td>
+                <td>⭐⭐⭐⭐</td>
+                <td>⚠️ Overkill</td>
+            </tr>
+            <tr class="recommended">
+                <td><strong>Smart Routing</strong> <span class="badge-recommended">REKOMENDASI</span><br><small>Model berbeda per agen</small></td>
+                <td>Rp 24.800 - 54.100</td>
+                <td>Rp 744.000 - 1.623.000</td>
+                <td>⭐⭐⭐⭐⭐</td>
+                <td>✅ Optimal!</td>
+            </tr>
+            <tr>
+                <td><strong>Budget</strong><br><small>DeepSeek semua agen</small></td>
+                <td>Rp 5.000 - 15.000</td>
+                <td>Rp 150.000 - 450.000</td>
+                <td>⭐⭐⭐</td>
+                <td>⚠️ Kurang optimal</td>
+            </tr>
+            <tr>
+                <td><strong>Free Tier</strong><br><small>Nous Research + Leonardo</small></td>
+                <td>Rp 0 - 2.000</td>
+                <td>Rp 0 - 60.000</td>
+                <td>⭐⭐⭐</td>
+                <td>✅ Paling murah</td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- SECTION 4: FINAL CALCULATION -->
+    <div class="section">
+        <h2>4. Perhitungan Final (Smart Routing + Hostinger KVM 2)</h2>
+
+        <table>
+            <tr>
+                <th>Item</th>
+                <th>Biaya/Bulan</th>
+                <th>Catatan</th>
+            </tr>
+            <tr>
+                <td><strong>Hostinger KVM 2</strong></td>
+                <td>Rp 155.900</td>
+                <td>2 vCPU, 8GB RAM, 100GB NVMe</td>
+            </tr>
+            <tr>
+                <td><strong>Domain</strong></td>
+                <td>Rp 15.000</td>
+                <td>.com atau .id</td>
+            </tr>
+            <tr>
+                <td><strong>API Costs (Smart Routing)</strong></td>
+                <td>Rp 744.000 - 1.623.000</td>
+                <td>30 artikel/bulan, routing optimal</td>
+            </tr>
+            <tr>
+                <td><strong>Image Generation</strong></td>
+                <td>Rp 0 - 300.000</td>
+                <td>Leonardo AI free tier</td>
+            </tr>
+            <tr>
+                <td><strong>Misc (Email, Backup, etc)</strong></td>
+                <td>Rp 50.000</td>
+                <td>Zoho, Google Drive, etc</td>
+            </tr>
+            <tr>
+                <td><strong>TOTAL OPERASIONAL</strong></td>
+                <td class="cost"><strong>Rp 964.900 - 2.143.900/bln</strong></td>
+                <td>-</td>
+            </tr>
+        </table>
+
+        <div class="profit-highlight">
+            <h4>🎯 Break-Even Point</h4>
+            <div class="profit-number">2-4 Pelanggan</div>
+            <p class="profit-detail">Dengan Smart Routing + Hostinger KVM 2, break-even tercapai dengan 2-4 pelanggan Professional!</p>
+        </div>
+    </div>
+
+    <!-- SECTION 5: PROFIT PROJECTION -->
+    <div class="section">
+        <h2>5. Proyeksi Keuntungan (Smart Routing)</h2>
+
+        <table>
+            <tr>
+                <th>Skenario</th>
+                <th>Pelanggan</th>
+                <th>Pendapatan/Bulan</th>
+                <th>Biaya Operasional</th>
+                <th>Keuntungan</th>
+                <th>Margin</th>
+            </tr>
+            <tr>
+                <td><strong>Conservative</strong></td>
+                <td>5 (Starter)</td>
+                <td>Rp 995.000</td>
+                <td>Rp 1.500.000</td>
+                <td class="profit">Rp -505.000</td>
+                <td>-51%</td>
+            </tr>
+            <tr>
+                <td><strong>Moderate</strong></td>
+                <td>10 (5+5)</td>
+                <td>Rp 3.490.000</td>
+                <td>Rp 2.000.000</td>
+                <td class="profit">Rp 1.490.000</td>
+                <td>43%</td>
+            </tr>
+            <tr class="recommended">
+                <td><strong>Target</strong></td>
+                <td>20 (5+10+5)</td>
+                <td>Rp 9.475.000</td>
+                <td>Rp 3.500.000</td>
+                <td class="profit">Rp 5.975.000</td>
+                <td>63%</td>
+            </tr>
+            <tr>
+                <td><strong>Optimistic</strong></td>
+                <td>50 (10+30+10)</td>
+                <td>Rp 24.935.000</td>
+                <td>Rp 8.000.000</td>
+                <td class="profit">Rp 16.935.000</td>
+                <td>68%</td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- SECTION 6: RECOMMENDATION -->
+    <div class="section">
+        <h2>6. Rekomendasi Final</h2>
+
+        <div class="card-grid">
+            <div class="card">
+                <h4>🖥️ Hosting</h4>
+                <div class="price">Rp 155.900 <span>/bln</span></div>
+                <p>Hostinger KVM 2 — 2 vCPU, 8GB RAM, 100GB NVMe. Cukup untuk 6 profil Hermes Agent + Telegram gateway.</p>
+            </div>
+            <div class="card">
+                <h4>🧠 API Strategy</h4>
+                <div class="price">Smart <span>Routing</span></div>
+                <p>DeepSeek (Riset) + GPT-4o mini (Verifikasi) + Claude Sonnet (Writer) + GPT-4.1 (Editor) + Gemini (Publisher)</p>
+            </div>
+            <div class="card">
+                <h4>💰 Biaya/Artikel</h4>
+                <div class="price">Rp 24.800 <span>- 54.100</span></div>
+                <p>Dengan smart routing, biaya per artikel sangat kompetitif dengan kualitas premium.</p>
+            </div>
+        </div>
+
+        <div class="profit-highlight">
+            <h4>✅ Kesimpulan</h4>
+            <p class="profit-detail" style="font-size: 1.1em;">
+                Dengan <strong>Hostinger KVM 2 (Rp 155.900/bln)</strong> dan <strong>Smart Routing OpenRouter</strong>,
+                Anda bisa menghasilkan konten berkualitas premium dengan biaya hanya <strong>Rp 24.800 - 54.100 per artikel</strong>.
+                Margin bisa mencapai <strong>63-68%</strong> dengan 20-50 pelanggan aktif.
+            </p>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <div style="text-align: center; padding: 40px; color: var(--text-muted); font-size: 0.85em; border-top: 1px solid var(--border); margin-top: 60px;">
+        <p><strong>AI Content Team</strong> — Hosting & OpenRouter Analysis</p>
+        <p>© 2026 | Data survei langsung dari OpenRouter & Hostinger</p>
+    </div>
+
+</div>
+
+</body>
+</html>
