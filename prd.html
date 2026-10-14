@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PRD — NaraGen Lab</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+
+        :root {
+            --bg: #0f172a;
+            --card-bg: #1e293b;
+            --card-border: #334155;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --accent-primary: #6366f1;
+            --accent-secondary: #8b5cf6;
+            --accent-success: #10b981;
+            --accent-warning: #f59e0b;
+            --accent-danger: #ef4444;
+            --accent-info: #3b82f6;
+            --code-bg: #0d1117;
+            --radius: 12px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: var(--text-primary); line-height: 1.8; font-size: 15px; }
+        .container { max-width: 960px; margin: 0 auto; padding: 40px 24px; }
+
+        /* Hero */
+        .hero { text-align: center; padding: 80px 40px; background: linear-gradient(135deg, #1e1b4b, #312e81, #4c1d95); border-radius: 20px; margin-bottom: 48px; border: 1px solid var(--card-border); }
+        .hero h1 { font-size: 3em; font-weight: 800; background: linear-gradient(135deg, #a5b4fc, #c4b5fd); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 16px; }
+        .hero .subtitle { font-size: 1.2em; color: var(--text-secondary); margin-bottom: 24px; }
+        .hero .meta-badges { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+        .badge { background: rgba(99,102,241,0.15); border: 1px solid rgba(99,102,241,0.3); padding: 6px 16px; border-radius: 20px; font-size: 0.85em; color: #a5b4fc; font-weight: 600; }
+
+        /* TOC */
+        .toc { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: var(--radius); padding: 24px 32px; margin-bottom: 40px; }
+        .toc h2 { color: var(--accent-primary); font-size: 1.2em; margin-bottom: 12px; }
+        .toc ol { margin-left: 20px; color: var(--text-secondary); }
+        .toc li { margin-bottom: 6px; }
+        .toc a { color: #a5b4fc; text-decoration: none; }
+        .toc a:hover { text-decoration: underline; }
+
+        /* Sections */
+        .section { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: var(--radius); padding: 32px 40px; margin-bottom: 32px; }
+        .section h2 { color: var(--accent-primary); font-size: 1.6em; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid var(--card-border); }
+        .section h3 { color: var(--accent-secondary); font-size: 1.2em; margin: 24px 0 12px; }
+        .section h4 { color: var(--text-primary); font-size: 1em; margin: 16px 0 8px; }
+        .section p { margin-bottom: 12px; color: var(--text-secondary); }
+        .section ul, .section ol { margin-left: 24px; margin-bottom: 16px; color: var(--text-secondary); }
+        .section li { margin-bottom: 6px; }
+        .section strong { color: var(--text-primary); }
+
+        /* Tables */
+        table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 0.9em; }
+        th { background: rgba(99,102,241,0.1); color: #a5b4fc; font-weight: 600; text-align: left; padding: 12px 16px; border: 1px solid var(--card-border); }
+        td { padding: 10px 16px; border: 1px solid var(--card-border); color: var(--text-secondary); vertical-align: top; }
+        tr:hover td { background: rgba(99,102,241,0.03); }
+
+        /* Code */
+        code { font-family: 'JetBrains Mono', monospace; background: var(--code-bg); color: #7dd3fc; padding: 2px 8px; border-radius: 4px; font-size: 0.85em; }
+        pre { background: var(--code-bg); border: 1px solid var(--card-border); border-radius: 8px; padding: 20px; overflow-x: auto; margin: 16px 0; }
+        pre code { background: none; padding: 0; color: #e2e8f0; font-size: 0.82em; line-height: 1.6; }
+
+        /* Cards */
+        .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin: 20px 0; }
+        .card { background: rgba(99,102,241,0.05); border: 1px solid var(--card-border); border-radius: 10px; padding: 20px; }
+        .card h4 { color: var(--accent-primary); margin-bottom: 8px; font-size: 1em; }
+        .card p { font-size: 0.9em; margin: 0; }
+
+        /* Status badges */
+        .status { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 0.75em; font-weight: 600; }
+        .status-final { background: rgba(16,185,129,0.15); color: #34d399; border: 1px solid rgba(16,185,129,0.3); }
+        .status-draft { background: rgba(245,158,11,0.15); color: #fbbf24; border: 1px solid rgba(245,158,11,0.3); }
+
+        /* Alert boxes */
+        .alert { border-left: 4px solid; padding: 16px 20px; margin: 16px 0; border-radius: 0 8px 8px 0; }
+        .alert-info { border-color: var(--accent-info); background: rgba(59,130,246,0.08); }
+        .alert-warning { border-color: var(--accent-warning); background: rgba(245,158,11,0.08); }
+        .alert-success { border-color: var(--accent-success); background: rgba(16,185,129,0.08); }
+
+        /* Flow diagram */
+        .flow { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 8px; margin: 24px 0; padding: 24px; background: rgba(99,102,241,0.03); border-radius: 10px; }
+        .flow-step { background: var(--card-bg); border: 1px solid var(--accent-primary); padding: 10px 18px; border-radius: 8px; font-weight: 600; font-size: 0.85em; color: #a5b4fc; white-space: nowrap; }
+        .flow-arrow { color: var(--accent-secondary); font-size: 1.2em; }
+
+        /* Footer */
+        footer { text-align: center; padding: 40px; color: var(--text-secondary); font-size: 0.85em; }
+        footer .divider { width: 60px; height: 3px; background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary)); margin: 0 auto 16px; border-radius: 2px; }
+    </style>
+</head>
+<body>
+
+<div class="hero">
+    <h1>PRD — NaraGen Lab</h1>
+    <p class="subtitle">Product Requirements Document<br>Sistem Berita AI Multi-Agen</p>
+    <div class="meta-badges">
+        <span class="badge">Versi 1.0</span>
+        <span class="badge">Tanggal: 13 Okt 2026</span>
+        <span class="badge">Status: <span class="status status-final">FINAL</span></span>
+        <span class="badge">Penulis: Riko Purwanto</span>
+    </div>
+</div>
+
+<div class="container">
+
+    <div class="toc">
+        <h2>📑 Daftar Isi</h2>
+        <ol>
+            <li><a href="#s1">Executive Summary</a></li>
+            <li><a href="#s2">Latar Belakang & Masalah</a></li>
+            <li><a href="#s3">Tujuan & Sasaran</a></li>
+            <li><a href="#s4">Target Pengguna</a></li>
+            <li><a href="#s5">Ruang Lingkup (Scope)</a></li>
+            <li><a href="#s6">Arsitektur Sistem</a></li>
+            <li><a href="#s7">Spesifikasi Fungsional</a></li>
+            <li><a href="#s8">Spesifikasi Non-Fungsional</a></li>
+            <li><a href="#s9">User Stories</a></li>
+            <li><a href="#s10">Data Model</a></li>
+            <li><a href="#s11">Timeline & Milestone</a></li>
+            <li><a href="#s12">Risks & Mitigations</a></li>
+            <li><a href="#s13">Success Metrics</a></li>
+            <li><a href="#s14">Future Roadmap</a></li>
+        </ol>
+    </div>
+
+    <div class="section" id="s1">
+        <h2>1. Executive Summary</h2>
+        <p><strong>NaraGen Lab</strong> adalah sistem produksi konten berita berbasis AI yang menggunakan arsitektur <strong>multi-agent</strong> pada platform <strong>Hermes Agent</strong>. Sistem mengotomatisasi seluruh alur jurnalistik — riset, verifikasi fakta, penulisan, editing, publikasi — melalui 5 agen AI yang berinteraksi transparan dalam satu grup Telegram.</p>
+        <div class="card-grid">
+            <div class="card"><h4>🔍 Transparansi Penuh</h4><p>Seluruh proses editorial terlihat oleh pemilik di grup Telegram.</p></div>
+            <div class="card"><h4>✍️ Keaslian Terjamin</h4><p>Anti-plagiat dan humanisasi konten bawaan di setiap pipeline.</p></div>
+            <div class="card"><h4>⚖️ Keamanan Hukum</h4><p>Gerbang hak cipta dan monetisasi terintegrasi.</p></div>
+            <div class="card"><h4>💰 Efisiensi Biaya</h4><p>Menggunakan model AI gratis/tier murah dari Nous Research.</p></div>
+        </div>
+    </div>
+
+    <div class="section" id="s2">
+        <h2>2. Latar Belakang & Masalah</h2>
+        <h3>2.1 Masalah</h3>
+        <ul>
+            <li>Produksi konten berkualitas tinggi memakan waktu dan biaya besar.</li>
+            <li>Konten AI generik sering terdengar robotik dan rentan plagiarisme.</li>
+            <li>Verifikasi fakta sering diabaikan dalam produksi konten cepat.</li>
+            <li>Kurangnya transparansi dalam pipeline konten otomatis.</li>
+        </ul>
+        <h3>2.2 Solusi</h3>
+        <p>Sistem multi-agent di mana setiap agen memiliki peran spesifik dengan <strong>"gate" kualitas wajib</strong> sebelum pekerjaan diteruskan ke tahap berikutnya.</p>
+    </div>
+
+    <div class="section" id="s3">
+        <h2>3. Tujuan & Sasaran</h2>
+        <table>
+            <tr><th>No</th><th>Tujuan</th><th>Metrik</th></tr>
+            <tr><td>1</td><td>Otomatisasi produksi berita end-to-end</td><td>1 artikel lengkap &lt; 15 menit</td></tr>
+            <tr><td>2</td><td>Menjaga keaslian konten</td><td>Skor similarity &lt; 15%</td></tr>
+            <tr><td>3</td><td>Memastikan akurasi fakta</td><td>Zero factual errors on published</td></tr>
+            <tr><td>4</td><td>Menjaga transparansi proses</td><td>Semua stage terlihat di Telegram</td></tr>
+            <tr><td>5</td><td>Menjamin keamanan hukum</td><td>Zero copyright strikes</td></tr>
+        </table>
+    </div>
+
+    <div class="section" id="s4">
+        <h2>4. Target Pengguna</h2>
+        <table>
+            <tr><th>Persona</th><th>Profil</th><th>Kebutuhan</th></tr>
+            <tr><td><strong>Pemilik Konten</strong></td><td>Wartawan, pemilik portal, creator</td><td>Produksi cepat, kredibel, tanpa risiko hukum</td></tr>
+            <tr><td><strong>Tim Redaksi</strong></td><td>Editor, fact-checker, publisher</td><td>Tooling review dan approval</td></tr>
+            <tr><td><strong>Pembeli Komersial</strong></td><td>Agensi digital, startup media</td><td>Sistem ready-to-use, whitelabel</td></tr>
+        </table>
+    </div>
+
+    <div class="section" id="s5">
+        <h2>5. Ruang Lingkup (Scope)</h2>
+        <h3>5.1 In Scope</h3>
+        <ul>
+            <li>Pipeline produksi berita otomatis (5 agen)</li>
+            <li>Integrasi Telegram sebagai antarmuka utama</li>
+            <li>Verifikasi fakta dengan gate wajib</li>
+            <li>Humanisasi konten anti-AI-sounding</li>
+            <li>Anti-plagiat dan hak cipta</li>
+            <li>Format multi-platform (website, X, LinkedIn, Instagram)</li>
+            <li>Watchdog dan monitoring</li>
+            <li>Template SOUL.md yang dapat dikustomisasi</li>
+        </ul>
+        <h3>5.2 Out of Scope</h3>
+        <ul>
+            <li>Sistem manajemen pembayaran/penagihan</li>
+            <li>Aplikasi mobile native</li>
+            <li>Portal web kustom (integrasi eksternal opsional)</li>
+            <li>Multi-bahasa (fokus Bahasa Indonesia)</li>
+        </ul>
+    </div>
+
+    <div class="section" id="s6">
+        <h2>6. Arsitektur Sistem</h2>
+        <div class="flow">
+            <div class="flow-step">👤 Owner</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step">🎯 Orkestrator</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step">🔍 Raka</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step">✅ Sari</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step">✍️ Dimas</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step">📝 Maya</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step">🚀 Ari</div>
+        </div>
+        <table>
+            <tr><th>Komponen</th><th>Teknologi</th><th>Deskripsi</th></tr>
+            <tr><td>Platform</td><td>Hermes Agent CLI</td><td>Framework AI agent open-source</td></tr>
+            <tr><td>Provider Model</td><td>Nous Research API</td><td>Model gratis stepfun & laguna</td></tr>
+            <tr><td>Messaging</td><td>Telegram Bot API</td><td>Antarmuka utama</td></tr>
+            <tr><td>Orkestrasi</td><td>newsroom-auto-pipeline</td><td>Mention chaining otomatis</td></tr>
+            <tr><td>Kontrak Data</td><td>JSON</td><td>Komunikasi antar-agen</td></tr>
+            <tr><td>Monitoring</td><td>Shell + Cron</td><td>Watchdog 3 lapis</td></tr>
+        </table>
+    </div>
+
+    <div class="section" id="s7">
+        <h2>7. Spesifikasi Fungsional</h2>
+        <h3>7.1 Module: Research Agent (Raka)</h3>
+        <table>
+            <tr><th>Aturan</th><th>Keterangan</th></tr>
+            <tr><td>Input</td><td>Perintah topik dari Orkestrator</td></tr>
+            <tr><td>Proses</td><td>Web search → ringkasan poin kunci → triangulasi sumber</td></tr>
+            <tr><td>Output</td><td>Paket sumber: URL, key facts, angle suggestion</td></tr>
+            <tr><td>Gate</td><td>Minimal 2 sumber independen</td></tr>
+            <tr><td>Persona</td><td>Anak Jakarta energik, bahasa gaul</td></tr>
+        </table>
+        <h3>7.2 Module: Fact-Check Agent (Sari)</h3>
+        <table>
+            <tr><th>Aturan</th><th>Keterangan</th></tr>
+            <tr><td>Input</td><td>Paket sumber dari Raka</td></tr>
+            <tr><td>Proses</td><td>Verifikasi: nama, angka, tanggal, institusi, kutipan</td></tr>
+            <tr><td>Output</td><td>Status: <code>aman</code> / <code>revisi</code> / <code>stop</code></td></tr>
+            <tr><td>Gate</td><td>Status harus <code>aman</code> untuk lanjut</td></tr>
+            <tr><td>Referensi</td><td>Duke Reporters' Lab, IFCN, C.R.A.A.P. test</td></tr>
+        </table>
+        <h3>7.3 Module: Writer Agent (Dimas)</h3>
+        <table>
+            <tr><th>Aturan</th><th>Keterangan</th></tr>
+            <tr><td>Input</td><td>Fakta terverifikasi dari Sari</td></tr>
+            <tr><td>Proses</td><td>Menulis 500-800 kata, inverted pyramid, original</td></tr>
+            <tr><td>Output</td><td>Artikel + thread X + LinkedIn + IG + hashtags</td></tr>
+            <tr><td>Gate</td><td>Tidak boleh menambah fakta tanpa sumber</td></tr>
+            <tr><td>Referensi</td><td>Strunk & White, Inverted Pyramid, Show don't tell</td></tr>
+        </table>
+        <h3>7.4 Module: Editor Agent (Maya)</h3>
+        <table>
+            <tr><th>Aturan</th><th>Keterangan</th></tr>
+            <tr><td>Input</td><td>Draf artikel dari Dimas</td></tr>
+            <tr><td>Gate 1</td><td>Humanisasi: bunuh pola AI</td></tr>
+            <tr><td>Gate 2</td><td>Anti-plagiat: rewrite jika similarity > 15%</td></tr>
+            <tr><td>Output</td><td>Artikel final + editorial notes + verdict</td></tr>
+            <tr><td>Referensi</td><td>SPJ Code of Ethics, AP Stylebook</td></tr>
+        </table>
+        <h3>7.5 Module: Publisher Agent (Ari)</h3>
+        <table>
+            <tr><th>Aturan</th><th>Keterangan</th></tr>
+            <tr><td>Input</td><td>Artikel final dari Maya</td></tr>
+            <tr><td>Proses</td><td>Format untuk web, sosmed, audio; SEO optimization</td></tr>
+            <tr><td>Output</td><td>Paket final: SEO title, slug, meta, semua format</td></tr>
+            <tr><td>Gate</td><td>Judul GREGET tapi tidak clickbait palsu</td></tr>
+            <tr><td>Referensi</td><td>Neil Patel, Backlinko, Google E-E-A-T</td></tr>
+        </table>
+    </div>
+
+    <div class="section" id="s8">
+        <h2>8. Spesifikasi Non-Fungsional</h2>
+        <h3>8.1 Performance</h3>
+        <table>
+            <tr><th>Metrik</th><th>Target</th></tr>
+            <tr><td>Waktu total pipeline</td><td>&lt; 15 menit</td></tr>
+            <tr><td>Response time per agen</td><td>&lt; 90 detik</td></tr>
+            <tr><td>Uptime sistem</td><td>&gt; 99%</td></tr>
+        </table>
+        <h3>8.2 Security</h3>
+        <table>
+            <tr><th>Aspek</th><th>Implementasi</th></tr>
+            <tr><td>API keys</td><td>Hanya di <code>.env</code>, never in code/logs</td></tr>
+            <tr><td>Human approval</td><td>Wajib untuk topik sensitif</td></tr>
+            <tr><td>Audit trail</td><td>Semua output tersimpan di JSON + Telegram</td></tr>
+        </table>
+        <h3>8.3 Usability</h3>
+        <table>
+            <tr><th>Aspek</th><th>Implementasi</th></tr>
+            <tr><td>Onboarding</td><td>Tutorial 8 fase siap pakai</td></tr>
+            <tr><td>Error messages</td><td>Clear, actionable, bahasa Indonesia</td></tr>
+            <tr><td>Monitoring</td><td>Semua proses terlihat di Telegram</td></tr>
+        </table>
+    </div>
+
+    <div class="section" id="s9">
+        <h2>9. User Stories</h2>
+        <table>
+            <tr><th>ID</th><th>Story</th><th>Acceptance Criteria</th></tr>
+            <tr><td>US-01</td><td>Membuat artikel dari topik dengan 1 perintah</td><td><code>/autopipeline &lt;topik&gt;</code> memicu full pipeline</td></tr>
+            <tr><td>US-02</td><td>Melihat seluruh proses editorial di grup</td><td>Semua mention & response terlihat</td></tr>
+            <tr><td>US-03</td><td>Sistem berhenti jika ada masalah</td><td>Pipeline stop + notifikasi</td></tr>
+            <tr><td>US-04</td><td>Menyetujui topik sensitif</td><td>Human approval gate</td></tr>
+            <tr><td>US-05</td><td>Mendapatkan paket final siap publish</td><td>Article + thread + LinkedIn + IG + SEO</td></tr>
+        </table>
+    </div>
+
+    <div class="section" id="s10">
+        <h2>10. Data Model — Kontrak JSON</h2>
+        <pre><code>// Research (Raka)
+{"stage":"research","agent":"raka","output":{"sources":[],"key_facts":[],"key_questions":[],"angle_suggestion":"...","sensitive":false}}
+
+// Fact Check (Sari)
+{"stage":"fact_check","agent":"sari","output":{"verified_facts":[],"unverified_claims":[],"status":"aman|revisi|stop"}}
+
+// Writing (Dimas)
+{"stage":"writing","agent":"dimas","output":{"article":"...","thread_x":"...","linkedin_post":"...","instagram_caption":"...","hashtags":[]}}
+
+// Editing (Maya)
+{"stage":"editing","agent":"maya","output":{"article":"...","editorial_notes":[],"verdict":"ok|revise|stop","gates_passed":{"source_completeness":true,"originality":true,"copyright":true}}}
+
+// Publishing (Ari)
+{"stage":"publish","agent":"ari","output":{"final_packet":"...","seo":{"title":"...","slug":"..."},"monetization_safe":true,"sensitive":false}}</code></pre>
+    </div>
+
+    <div class="section" id="s11">
+        <h2>11. Timeline & Milestone</h2>
+        <table>
+            <tr><th>Fase</th><th>Durasi</th><th>Output</th></tr>
+            <tr><td><strong>Fase 1: Setup</strong></td><td>Hari 1</td><td>6 profiles, model configured</td></tr>
+            <tr><td><strong>Fase 2: Persona</strong></td><td>Hari 2</td><td>5 SOUL.md files</td></tr>
+            <tr><td><strong>Fase 3: Group</strong></td><td>Hari 3</td><td>Telegram group with 5 bots</td></tr>
+            <tr><td><strong>Fase 4: Pipeline</strong></td><td>Hari 4</td><td>/autopipeline working</td></tr>
+            <tr><td><strong>Fase 5: Testing</strong></td><td>Hari 5</td><td>Full test + troubleshooting</td></tr>
+            <tr><td><strong>Fase 6: Watchdog</strong></td><td>Hari 6</td><td>Cron jobs active</td></tr>
+            <tr><td><strong>Fase 7: Documentation</strong></td><td>Hari 7</td><td>Tutorial + PRD complete</td></tr>
+        </table>
+        <div class="alert alert-info"><strong>Total estimasi: 7 hari</strong> untuk build dari nol hingga production-ready.</div>
+    </div>
+
+    <div class="section" id="s12">
+        <h2>12. Risks & Mitigations</h2>
+        <table>
+            <tr><th>Risk</th><th>Prob</th><th>Impact</th><th>Mitigation</th></tr>
+            <tr><td>Model API down</td><td>Medium</td><td>High</td><td>Fallback to alternative provider</td></tr>
+            <tr><td>Plagiarism tinggi</td><td>Medium</td><td>High</td><td>Editor gate + human review</td></tr>
+            <tr><td>Konten sensitif lolos</td><td>Low</td><td>Very High</td><td>Human approval gate</td></tr>
+            <tr><td>Pipeline stall</td><td>Medium</td><td>Medium</td><td>Watchdog + mention reminder</td></tr>
+            <tr><td>Token limit exceeded</td><td>Low</td><td>Low</td><td>Context compression</td></tr>
+        </table>
+    </div>
+
+    <div class="section" id="s13">
+        <h2>13. Success Metrics (KPI)</h2>
+        <table>
+            <tr><th>KPI</th><th>Target</th><th>Measurement</th></tr>
+            <tr><td>Articles produced/day</td><td>5-10</td><td>Count via /autopipeline</td></tr>
+            <tr><td>Factual accuracy</td><td>&gt; 95%</td><td>Manual spot check</td></tr>
+            <tr><td>Originality score</td><td>&gt; 85%</td><td>Plagiarism checker</td></tr>
+            <tr><td>Owner satisfaction</td><td>&gt; 4.5/5</td><td>Survey after 30 days</td></tr>
+            <tr><td>System uptime</td><td>&gt; 99%</td><td>Watchdog logs</td></tr>
+        </table>
+    </div>
+
+    <div class="section" id="s14">
+        <h2>14. Future Roadmap</h2>
+        <table>
+            <tr><th>Version</th><th>Features</th></tr>
+            <tr><td>v1.1</td><td>Multi-language support (English, Jawa, Sunda)</td></tr>
+            <tr><td>v1.2</td><td>Visual agent (image generation + infographic)</td></tr>
+            <tr><td>v1.3</td><td>Audio agent (TTS podcast script)</td></tr>
+            <tr><td>v1.4</td><td>CMS integration (WordPress, Ghost, Medium)</td></tr>
+            <tr><td>v1.5</td><td>Analytics dashboard</td></tr>
+            <tr><td>v2.0</td><td>White-label SaaS multi-tenant</td></tr>
+        </table>
+    </div>
+
+</div>
+
+<footer>
+    <div class="divider"></div>
+    <p><strong>NaraGen Lab</strong> — Product Requirements Document v1.0</p>
+    <p>© 2026 Naragen Studio | Riko Purwanto</p>
+</footer>
+
+</body>
+</html>
