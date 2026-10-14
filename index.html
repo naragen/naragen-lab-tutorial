@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NaraGen Lab - Complete Tutorial</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Playfair+Display:wght@700&display=swap');
+
+        :root {
+            --bg: #f8f9fb;
+            --card-bg: #ffffff;
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --accent-primary: #4f46e5; /* Indigo */
+            --accent-secondary: #8b5cf6; /* Violet */
+            --accent-tertiary: #10b981; /* Emerald */
+            --border-color: #e5e7eb;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            --shadow-hover: 0 6px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: var(--text-primary); line-height: 1.7; font-size: 16px; }
+        .container { max-width: 900px; margin: 0 auto; padding: 40px 20px; }
+        header { text-align: center; padding: 60px 0; background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary)); color: white; border-radius: 16px; margin-bottom: 40px; box-shadow: var(--shadow); }
+        header h1 { font-family: 'Playfair Display', serif; font-size: 2.8em; margin-bottom: 10px; }
+        header p { font-size: 1.1em; opacity: 0.9; }
+        .section { background-color: var(--card-bg); border-radius: 12px; padding: 30px 40px; margin-bottom: 30px; box-shadow: var(--shadow); }
+        .section:hover { box-shadow: var(--shadow-hover); }
+        .section h2 { color: var(--accent-primary); font-size: 1.8em; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid var(--border-color); }
+        .section h3 { color: var(--text-primary); font-size: 1.3em; margin: 20px 0 10px; }
+        .section ul, .section ol { margin-left: 20px; margin-bottom: 15px; }
+        .section li { margin-bottom: 8px; }
+        code { background-color: #eef2ff; color: var(--accent-primary); padding: 4px 8px; border-radius: 4px; font-family: 'Courier New', monospace; font-size: 0.9em; }
+        pre { background-color: #1f2937; color: #e5e7eb; padding: 20px; border-radius: 8px; overflow-x: auto; margin: 15px 0; white-space: pre-wrap; word-wrap: break-word; }
+        pre code { background-color: transparent; color: inherit; padding: 0; font-size: 0.85em; }
+        blockquote { border-left: 4px solid var(--accent-secondary); padding: 15px 20px; margin: 15px 0; background-color: #f3f4f6; border-radius: 0 8px 8px 0; font-style: italic; color: var(--text-secondary); }
+        .callout { border-left: 4px solid var(--accent-tertiary); padding: 15px 20px; margin: 20px 0; background-color: #ecfdf5; border-radius: 0 8px 8px 0; }
+        .callout.tip { border-left-color: #3b82f6; background-color: #eff6ff; }
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        th, td { border: 1px solid var(--border-color); padding: 10px 15px; text-align: left; }
+        th { background-color: #eef2ff; color: var(--accent-primary); font-weight: 600; }
+        tr:nth-child(even) { background-color: #f9fafb; }
+        footer { text-align: center; padding: 30px; color: var(--text-secondary); font-size: 0.9em; }
+        .divider { height: 1px; background: linear-gradient(90deg, transparent, var(--border-color), transparent); margin: 30px 0; }
+        .highlight { background: linear-gradient(120deg, #fef3c7 0%, #fef3c7 100%); padding: 2px 6px; border-radius: 4px; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>NaraGen Lab</h1>
+        <p>Sistem Berita AI Multi-Agen di Hermes Agent + Telegram<br><strong>Tutorial Lengkap untuk Pemula</strong></p>
+    </header>
+
+    <div class="container">
+
+        <div class="section">
+            <h2>🧭 Pendahuluan: Apa Itu NaraGen Lab?</h2>
+            <p><strong>NaraGen Lab</strong> adalah sebuah <strong>sistem berita otomatis berbasis AI</strong> yang terdiri dari lima "<em>agen</em>" pintar yang bekerja sama di dalam satu grup Telegram. Sistem ini mampu:</p>
+            <ul>
+                <li>Menerima ide topik dari Anda.</li>
+                <li>Otomatis mencari sumber, memverifikasi fakta, menulis, mengedit, dan mempersiapkan artikel untuk dipublikasikan.</li>
+                <li>Menampilkan seluruh prosesnya secara transparan di grup Telegram, sehingga Anda bisa selalu melihat siapa yang sedang mengerjakan apa.</li>
+                <li>Memastikan kualitas, keaslian, dan keamanan hukum setiap artikel sebelum dipublikasikan.</li>
+            </ul>
+            <p>Tutorial ini dirancang supaya <strong>bisa diikuti bahkan oleh orang yang belum pernah menggunakan Hermes Agent</strong>. Kami menyederhanakan setiap langkah dan memberikan perintah yang siap salin-tempel.</p>
+        </div>
+
+        <div class="section">
+            <h2>📦 Prasyarat (Yang Perlu Disiapkan Sebelumnya)</h2>
+            <ol>
+                <li><strong>Akun Pengguna Nous Research</strong> (gratis): Klik <a href="https://app.nousresearch.com" target="_blank">https://app.nousresearch.com</a> dan daftar. Ini memberi Anda akses ke model AI gratis seperti <code>stepfun/step-5-preview:free</code>.</li>
+                <li><strong>Akun Telegram</strong> dengan akses untuk membuat grup dan bot.</li>
+                <li><strong>Akses ke Hermes Agent CLI</strong>: Instalasi Hermes harus sudah selesai dan berfungsi. Perintah utamanya adalah <code>/opt/hermes/bin/hermes</code>.</li>
+            </ol>
+        </div>
+
+        <div class="section">
+            <h2>🧱 Fase 1: Membuat dan Mengatur Profil Hermes</h2>
+            <p>Sistem ini menggunakan <strong>6 profil Hermes yang berbeda</strong>, satu untuk orkestrator dan lima untuk setiap agen. Profil memungkinkan kita untuk memberi kepribadian dan konfigurasi yang berbeda untuk setiap "anggota tim".</p>
+
+            <h3>Langkah 1.1: Buat Semua Profil</h3>
+            <pre><code>/opt/hermes/bin/hermes profile create newsroom
+/opt/hermes/bin/hermes profile create newsroom-research
+/opt/hermes/bin/hermes profile create newsroom-factcheck
+/opt/hermes/bin/hermes profile create newsroom-writer
+/opt/hermes/bin/hermes profile create newsroom-editor
+/opt/hermes/bin/hermes profile create newsroom-publisher</code></pre>
+
+            <h3>Langkah 1.2: Atur Model untuk Setiap Profil</h3>
+            <pre><code>for profile in newsroom newsroom-research newsroom-factcheck newsroom-writer newsroom-editor; do
+  /opt/hermes/bin/hermes config set model.default "stepfun/step-5-preview:free" --profile $profile
+  /opt/hermes/bin/hermes config set model.provider "nous" --profile $profile
+done
+
+# Atur model yang lebih kuat untuk Publisher (Ari)
+/opt/hermes/bin/hermes config set model.default "poolside/laguna-s-2.1:free" --profile newsroom-publisher</code></pre>
+
+            <h3>Langkah 1.3: Aktifkan Gateway Telegram untuk Setiap Profil</h3>
+            <blockquote>
+                <strong>Penting</strong>: Anda perlu membuat <strong>5 bot Telegram terpisah</strong> menggunakan <code>@BotFather</code>. Beri mereka nama yang jelas:
+                <ul>
+                    <li><code>naragen_raka_bot</code> (untuk Research)</li>
+                    <li><code>naragen_sari_bot</code> (untuk Fact-check)</li>
+                    <li><code>naragen_dimas_bot</code> (untuk Writer)</li>
+                    <li><code>naragen_maya_bot</code> (untuk Editor)</li>
+                    <li><code>naragen_ari_bot</code> (untuk Publisher)</li>
+                </ul>
+                Simpan semua token bot ini, Anda akan butuhnya nanti.
+            </blockquote>
+            <p>Setelah membuat bot, atur <strong>Privacy Mode</strong> mereka agar mereka dapat merespons pesan secara otomatis di grup:</p>
+            <ol>
+                <li>Buka <code>@BotFather</code> di Telegram.</li>
+                <li>Kirim perintah <code>/mybots</code>.</li>
+                <li>Pilih bot Anda (misalnya, <code>naragen_raka_bot</code>).</li>
+                <li>Pilih <code>Edit Bot</code> → <code>Privacy Mode</code>.</li>
+                <li><strong>Matikan</strong> privacy mode untuk <strong>semua 5 bot</strong>. Ini diperlukan agar mereka bisa "mendengar" dan merespons pesan di dalam grup.</li>
+            </ol>
+            <p>Kemudian, untuk setiap profil agen, ikuti langkah ini:</p>
+            <pre><code>/opt/hermes/bin/hermes telegram enable --profile newsroom-research</code></pre>
+            <div class="callout tip">Jika Anda kesulitan, gunakan <code>/opt/hermes/bin/hermes telegram setup --profile &lt;nama_profil&gt;</code> untuk panduan interaktif yang lebih rinci.</div>
+        </div>
+
+        <div class="section">
+            <h2>🧙 Fase 2: Membuat Kepribati Agen (SOUL.md)</h2>
+            <p>Ini adalah langkah yang membuat sistem Anda terasa hidup. Setiap agen memiliki kepribadian, gaya bicara, dan aturan komunikasi tersendiri yang didefinisikan dalam file <code>SOUL.md</code>.</p>
+            <blockquote>
+                <strong>Saran</strong> Untuk mendapatkan kepribadian yang paling akurat, salin file <code>SOUL.md</code> yang sudah ada di masing-masing profil agen. File ini sudah sangat rinci dan telah diuji. Ini adalah <span class="highlight">"resep rahasia"</span> yang dibuat oleh pengembang sistem sebelumnya.
+            </blockquote>
+            <h3>Struktur Dasar Template SOUL.md</h3>
+            <pre><code># Nama_Agen — Peran Anda
+
+## Identitas
+[Nama], [umur], dari [kota/asal]. [Deskripsi singkat kepribadian dan keahlian Anda].
+
+## Cara Ngomong
+- Gunakan bahasa yang sesuai dengan karakter Anda.
+- Panggil pemilik (Riko Purwanto) dengan **"Om Riko"**.
+- JANGAN gunakan istilah teknis seperti "orchestrator", "stage", "pipeline", "agent", "JSON".
+- Sapa teman-teman agen lain dengan nama panggilan yang tepat.
+
+## Peran
+[Jelaskan tugas spesifik Anda di sistem ini].
+
+## Output Internal
+Setelah pesan obrolan Anda, tambahkan blok data berikut ini untuk konsumsi sistem:
+--- JSON_START ---
+{ ... kontrak JSON agen ... }
+--- JSON_END ---</code></pre>
+        </div>
+
+        <div class="section">
+            <h2>🧩 Fase 3: Mengatur Agen sebagai Anggota Grup Telegram</h2>
+            <h3>Langkah 3.1: Buat Grup Telegram untuk Tim NaraGen</h3>
+            <ol>
+                <li>Buka Telegram.</li>
+                <li>Buat grup baru (misalnya, "NaraGen Newsroom").</li>
+                <li>Undang kelima bot Telegram (<code>naragen_raka_bot</code>, <code>naragen_sari_bot</code>, dll.) ke dalam grup ini.</li>
+            </ol>
+            <h3>Langkah 3.2: Atur Izin dan Privasi</h3>
+            <p>Pastikan bot-bot tersebut dapat:</p>
+            <ul>
+                <li>Membaca pesan di grup.</li>
+                <li>Mengirim pesan ke grup.</li>
+                <li>Merespons saat ditandai.</li>
+            </ul>
+            <div class="callout tip">Pastikan privacy mode sudah dimatikan untuk semua bot di Langkah 1.3.</div>
+        </div>
+
+        <div class="section">
+            <h2>⚙️ Fase 4: Mengatur Alur Kerja Otomatis (<code>/autopipeline</code>)</h2>
+            <p>Ini adalah inti keseluruhan sistem. Skill <code>newsroom-auto-pipeline</code> sudah ada di profil <code>manager</code> Anda.</p>
+            <h3>Langkah 4.1: Pastikan Skill Terpasang</h3>
+            <pre><code>/opt/hermes/bin/hermes skills install newsroom-auto-pipeline</code></pre>
+            <h3>Langkah 4.2: Konfigurasi dan Jalankan Gateway di Profil <code>manager</code></h3>
+            <pre><code>/opt/hermes/bin/hermes config set gateway.profile_routes '[{"name":"newsroom-owner","platform":"telegram","user_id":"253935953","chat_id":"253935953","profile":"newsroom"}]'
+
+/opt/hermes/bin/hermes gateway start</code></pre>
+            <p>Informasi: Profil <code>manager</code> ini memungkinkan Anda untuk memicu seluruh rantai agen hanya dengan mengirim pesan.</p>
+        </div>
+
+        <div class="section">
+            <h2>🔄 Fase 5: Cara Sistem Bekerja (Flow Visual)</h2>
+            <p><strong>Anda</strong> mengirimkan pesan ke grup Telegram, misalnya:</p>
+            <pre><code>/autopipeline cerita inspirasi startup lokal di Sekadau</code></pre>
+            <p>Berikut adalah apa yang terjadi selanjutnya:</p>
+            <ol>
+                <li>Orkestrator menandai <code>@naragen_raka_bot</code> dan meminta pencarian sumber.</li>
+                <li>Raka merespons dengan paket sumber.</li>
+                <li>Orkestrator menandai <code>@naragen_sari_bot</code> untuk verifikasi fakta.</li>
+                <li>Sari memberikan status verifikasi.</li>
+                <li>Orkestrator menandai <code>@naragen_dimas_bot</code> untuk menulis draf.</li>
+                <li>Dimas merespons dengan artikel.</li>
+                <li>Orkestrator menandai <code>@naragen_maya_bot</code> untuk mengedit.</li>
+                <li>Maya merespons dengan versi akhir.</li>
+                <li>Orkestrator menandai <code>@naragen_ari_bot</code> untuk mempublikasikan.</li>
+                <li>Ari merespons dengan paket final.</li>
+            </ol>
+        </div>
+
+        <div class="section">
+            <h2>📜 Fase 6: Kontrak Data (JSON Internal)</h2>
+            <p>Setiap agen mengirimkan hasilnya yang dilengkapi dengan blok JSON tersembunyi untuk konsumsi sistem. Berikut adalah contoh kontraknya:</p>
+            <pre><code>/* Raka (Research) */
+{"stage": "research", "agent": "raka", "summary": "...", "output": {"sources": [...], "key_facts": [...], ...}, "next_agent_message": "..."}
+
+/* Sari (Fact-check) */
+{"stage": "fact_check", "agent": "sari", "output": {"verified_facts": [...], "status": "aman"}, "next_agent_message": "..."}
+
+/* Dimas (Writer) */
+{"stage": "writing", "agent": "dimas", "output": {"article": "...", "thread_x": "..."}, "next_agent_message": "..."}
+
+/* Maya (Editor) */
+{"stage": "editing", "agent": "maya", "output": {"article": "...", "verdict": "ok", "editorial_notes": [...]}, "next_agent_message": "..."}
+
+/* Ari (Publisher) */
+{"stage": "publish", "agent": "ari", "output": {"final_packet": "...", "seo": {...}, "monetization_safe": true}, "next_agent_message": "..."}</code></pre>
+        </div>
+
+        <div class="section">
+            <h2>🔧 Fase 7: Memastikan Sistem Stabil</h2>
+            <h3>Langkah 7.1: Pastikan Watchdog Berjalan</h3>
+            <p>Sistem ini dilindungi oleh tiga skrip watchdog yang berjalan dari cron setiap 15 menit:</p>
+            <ul>
+                <li><code>newsroom_pipeline_watchdog.sh</code>: Merestart daemon pipeline jika mati.</li>
+                <li><code>newsroom_orchestrator_watchdog.sh</code>: Memantau proses orkestrator.</li>
+                <li><code>newsroom_mention_reminder_watchdog.sh</code>: Mengingatkan agen yang tertunda.</li>
+            </ul>
+            <h3>Langkah 7.2: Periksa Kesehatan Sistem</h3>
+            <pre><code>/opt/hermes/bin/hermes doctor</code></pre>
+        </div>
+
+        <div class="section">
+            <h2>🛡️ Fase 8: Keamanan & Monetisasi</h2>
+            <p>Sistem ini dilengkapi dengan <code>newsroom-publishing-policy</code> yang menetapkan 6 gerbang keamanan:</p>
+            <ol>
+                <li><strong>Source Gate</strong>: Setiap klaim harus memiliki sumber yang dapat dilacak.</li>
+                <li><strong>Originality Gate</strong>: Salinan harus menambah nilai editorial.</li>
+                <li><strong>Copyright Gate</strong>: Semua media harus memiliki hak penggunaan yang jelas.</li>
+                <li><strong>Editorial Gate</strong>: Nada, struktur, dan fakta harus sesuai standar.</li>
+                <li><strong>Monetization Gate</strong>: Konten harus aman untuk iklan/sponsor.</li>
+                <li><strong>Human Approval Gate</strong>: Topik sensitif membutuhkan persetujuan manusia.</li>
+            </ol>
+        </div>
+
+        <div class="section">
+            <h2>💰 Saran Harga Jual (Marketing Guide)</h2>
+            <p>Jika Anda ingin menjual sistem serupa ini kepada orang lain, berikut adalah struktur harga yang disarankan untuk produk digital Anda:</p>
+            <h3>Opsi 1: Produk Digital (Ebook + Template)</h3>
+            <table>
+                <tr><th>Paket</th><th>Harga</th><th>Keterangan</th></tr>
+                <tr><td>Basic Blueprint (Ebook PDF)</td><td>Rp 299.000</td><td>Penjelasan sistem + flow diagram dasar.</td></tr>
+                <tr><td>Complete Kit (Ebook + Template SOUL.md + Config Recipes)</td><td>Rp 699.000</td><td>Siap pakai, termasuk panduan troubleshooting.</td></tr>
+                <tr><td>Premium (Complete Kit + Instalasi Virtual 1:1)</td><td>Rp 1.499.000</td><td>Dukungan penuh dari kami untuk setup.</td></tr>
+            </table>
+            <h3>Opsi 2: Jasa Profesional</h3>
+            <table>
+                <tr><th>Layanan</th><th>Harga</th></tr>
+                <tr><td>Instalasi & Konfigurasi Penuh</td><td>Rp 5.000.000 – Rp 8.000.000</td></tr>
+                <tr><td>Langganan Bulanan (Support & Maintenance)</td><td>Rp 999.000 / bulan</td></tr>
+            </table>
+            <div class="divider"></div>
+            <h3>🎯 Tip Penjualan yang Efektif</h3>
+            <ul>
+                <li><strong>Demo Langsung</strong>: Tunjukkan video/screencast dari grup Telegram di mana 5 agen sedang berdiskusi dan menyelesaikan satu topik berita. Ini adalah "bukti nyata" yang paling kuat.</li>
+                <li><strong>Keunikan Kepribati</strong>: Tekankan bahwa kepribadian agen (Raka, Sari, Dimas, Maya, Ari) adalah "fitur andalan" yang membuat sistem ini terasa hidup dan tidak kaku seperti robot biasa.</li>
+                <li><strong>White-label</strong>: Tawarkan paket di mana kepriadainya bisa diganti sesuai merek pembeli.</li>
+            </ul>
+        </div>
+
+    </div>
+
+    <footer>
+        <p>NaraGen Lab — Dibuat dengan ❤️ di Jakarta | Untuk penggunaan komersial, hubungi naragen.lab@example.com</p>
+    </footer>
+
+</body>
+</html>
